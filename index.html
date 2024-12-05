@@ -13,6 +13,9 @@
             --border-color: #ccc;
             --accent-color: #4CAF50;
             --heading-color: #222;
+            --color-plant1: #7B68EE; /* Purple */
+            --color-plant2: #FF1493; /* Dark Pink */
+            --color-plant3: #FFA500; /* Orange */
         }
 
         .dark-mode {
@@ -142,41 +145,33 @@
             justify-content: center;
             gap: 10px;
             margin-bottom: 15px;
+            flex-wrap: wrap;
         }
 
         .guess-buttons button {
             padding: 8px 15px;
-            border: 1px solid var(--accent-color);
-            background: var(--accent-color);
-            color: #fff;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-        }
-
-        .guess-buttons button:hover {
-            background: #43a047;
-        }
-
-        #startButton {
-            padding: 8px 15px;
             border: 1px solid var(--border-color);
-            background: var(--card-bg);
-            color: var(--text-color);
             border-radius: 5px;
             font-size: 1rem;
             cursor: pointer;
+            color: #fff;
             transition: background 0.3s ease;
         }
 
-        #startButton[disabled] {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .guess-buttons button:hover {
+            opacity: 0.8;
         }
 
-        #startButton:hover:enabled {
-            background: var(--accent-color);
-            color: #fff;
+        .guess-buttons .plant1 {
+            background: var(--color-plant1);
+        }
+
+        .guess-buttons .plant2 {
+            background: var(--color-plant2);
+        }
+
+        .guess-buttons .plant3 {
+            background: var(--color-plant3);
         }
 
         canvas {
@@ -253,7 +248,7 @@
                 font-size: 1.5rem;
             }
 
-            .toggle-theme, .guess-buttons button, #startButton {
+            .toggle-theme, .guess-buttons button {
                 font-size: 0.9rem;
                 padding: 8px 12px;
             }
@@ -301,15 +296,14 @@
         <div class="right-column">
             <!-- Game Section -->
             <div class="game-section">
-                <p>Select the plant you think will survive the longest, then click Start Game.</p>
+                <p>Select the plant you think will survive the longest. The game will start immediately when you choose one.</p>
                 <div class="guess-container">
                     <p>Select a Plant:</p>
                     <div class="guess-buttons">
-                        <button onclick="selectGuess(1)">Plant 1</button>
-                        <button onclick="selectGuess(2)">Plant 2</button>
-                        <button onclick="selectGuess(3)">Plant 3</button>
+                        <button class="plant1" onclick="selectGuess(1)">Plant 1</button>
+                        <button class="plant2" onclick="selectGuess(2)">Plant 2</button>
+                        <button class="plant3" onclick="selectGuess(3)">Plant 3</button>
                     </div>
-                    <button id="startButton" onclick="startGame()" disabled>Start Game</button>
                 </div>
                 <canvas id="gameCanvas"></canvas>
             </div>
@@ -341,7 +335,6 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const infoDiv = document.getElementById('realTimeInfo');
-        const startButton = document.getElementById('startButton');
 
         // Load images
         const plantImages = [
@@ -380,7 +373,7 @@
 
         function selectGuess(guess) {
             userGuess = guess;
-            startButton.disabled = false;
+            startGame();
         }
 
         function initializeGame() {
@@ -424,7 +417,6 @@
                 alert('Please select a valid plant (1, 2, or 3).');
                 return;
             }
-            startButton.disabled = true;
             resizeCanvas();
             initializeGame();
             gameLoop();
@@ -463,7 +455,7 @@
                     plant.health += 5 * plant.resource_efficiency;
                     plant.resources_collected += 1;
                     water.x = Math.random() * canvas.width;
-                    water.y = Math.random() * canvas.height * 0.5 + canvas.height * 0.5;
+                    water.y = Math.random() * canvas.height * 0.5 + canvasHeight * 0.5;
                 }
 
                 hazards.forEach(hazard => {
@@ -532,7 +524,6 @@
         function resetGame() {
             gameEnded = false;
             userGuess = null;
-            startButton.disabled = true;
         }
 
         function gameLoop() {
