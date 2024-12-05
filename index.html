@@ -171,6 +171,51 @@
             gameLoop();
         }
 
+        // Update game state
+        function updateGame() {
+            let alivePlants = 0;
+
+            plants.forEach(plant => {
+                if (plant.health <= 0) return;
+
+                alivePlants++;
+
+                // Move plants toward sunlight or water
+                const dx = sunlight.x - plant.x;
+                const dy = sunlight.y - plant.y;
+                const distance = Math.sqrt(dx ** 2 + dy ** 2);
+
+                if (distance > 0) {
+                    plant.x += (dx / distance) * plant.growth_rate;
+                    plant.y += (dy / distance) * plant.growth_rate;
+                }
+
+                // Reduce health over time
+                plant.health -= 0.1;
+
+                // Collect sunlight
+                if (Math.abs(plant.x - sunlight.x) < 20 && Math.abs(plant.y - sunlight.y) < 20) {
+                    plant.health += 10 * plant.resource_efficiency;
+                    plant.resources_collected += 1;
+                    sunlight.x = Math.random() * canvas.width;
+                    sunlight.y = Math.random() * canvas.height * 0.5;
+                }
+
+                // Collect water
+                if (Math.abs(plant.x - water.x) < 20 && Math.abs(plant.y - water.y) < 20) {
+                    plant.health += 5 * plant.resource_efficiency;
+                    plant.resources_collected += 1;
+                    water.x = Math.random() * canvas.width;
+                    water.y = Math.random() * canvas.height * 0.5 + canvas.height * 0.5;
+                }
+            });
+
+            if (alivePlants === 1) {
+                gameEnded = true;
+                endGame();
+            }
+        }
+
         // Draw game elements
         function drawGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -207,6 +252,7 @@
         // Main game loop
         function gameLoop() {
             if (!gameEnded) {
+                updateGame();
                 drawGame();
                 requestAnimationFrame(gameLoop);
             }
