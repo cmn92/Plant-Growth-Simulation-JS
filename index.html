@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Plant Growth Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -128,34 +128,55 @@
             margin-bottom: 15px;
         }
 
-        label {
+        .guess-container {
+            text-align: center;
+        }
+
+        .guess-container p {
+            margin-bottom: 10px;
             font-size: 1rem;
         }
 
-        input[type="number"] {
-            padding: 8px 10px;
-            font-size: 1rem;
-            border-radius: 5px;
-            border: 1px solid var(--border-color);
-            margin: 10px 0;
-            width: 100%;
-            max-width: 150px;
-            box-sizing: border-box;
+        .guess-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        button {
-            padding: 10px 20px;
-            font-size: 1rem;
-            border-radius: 5px;
+        .guess-buttons button {
+            padding: 8px 15px;
             border: 1px solid var(--accent-color);
             background: var(--accent-color);
             color: #fff;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .guess-buttons button:hover {
+            background: #43a047;
+        }
+
+        #startButton {
+            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-color);
+            border-radius: 5px;
+            font-size: 1rem;
             cursor: pointer;
             transition: background 0.3s ease;
         }
 
-        button:hover {
-            background: #43a047;
+        #startButton[disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #startButton:hover:enabled {
+            background: var(--accent-color);
+            color: #fff;
         }
 
         canvas {
@@ -164,10 +185,11 @@
             background: linear-gradient(135deg, var(--card-bg), var(--bg-color));
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 100%;
             height: auto;
             object-fit: contain;
             margin-top: 20px;
+            max-width: 100%;
+            max-height: 400px; /* Limit the height to prevent excessive vertical scrolling */
         }
 
         .stats {
@@ -231,12 +253,13 @@
                 font-size: 1.5rem;
             }
 
-            button, .toggle-theme, input[type="number"] {
+            .toggle-theme, .guess-buttons button, #startButton {
                 font-size: 0.9rem;
+                padding: 8px 12px;
             }
 
             canvas {
-                height: 250px;
+                max-height: 250px; /* Smaller max height for mobile */
             }
         }
 
@@ -278,10 +301,16 @@
         <div class="right-column">
             <!-- Game Section -->
             <div class="game-section">
-                <p>Can you predict which plant will flourish the longest? Place your guess below and start the simulation.</p>
-                <label for="guess">Your guess (1, 2, or 3):</label>
-                <input type="number" id="guess" min="1" max="3" placeholder="Enter your guess">
-                <button onclick="startGame()">Start Game</button>
+                <p>Select the plant you think will survive the longest, then click Start Game.</p>
+                <div class="guess-container">
+                    <p>Select a Plant:</p>
+                    <div class="guess-buttons">
+                        <button onclick="selectGuess(1)">Plant 1</button>
+                        <button onclick="selectGuess(2)">Plant 2</button>
+                        <button onclick="selectGuess(3)">Plant 3</button>
+                    </div>
+                    <button id="startButton" onclick="startGame()" disabled>Start Game</button>
+                </div>
                 <canvas id="gameCanvas"></canvas>
             </div>
         </div>
@@ -302,16 +331,17 @@
             }
         };
 
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const infoDiv = document.getElementById('realTimeInfo');
-
         let userGuess = null;
         let plants = [];
         let sunlight = { x: 0, y: 0, img: null };
         let water = { x: 0, y: 0, img: null };
         let hazards = [];
         let gameEnded = false;
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const infoDiv = document.getElementById('realTimeInfo');
+        const startButton = document.getElementById('startButton');
 
         // Load images
         const plantImages = [
@@ -338,14 +368,19 @@
         function resizeCanvas() {
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
-            // Try giving more space to the canvas on larger screens
+            // Keep a reasonable size to avoid excessive scrolling
             if (screenWidth > 1024) {
                 canvas.width = Math.min(800, screenWidth * 0.7);
-                canvas.height = Math.min(600, screenHeight * 0.7);
-            } else {
-                canvas.width = Math.min(800, screenWidth * 0.8);
                 canvas.height = Math.min(600, screenHeight * 0.6);
+            } else {
+                canvas.width = Math.min(600, screenWidth * 0.9);
+                canvas.height = Math.min(400, screenHeight * 0.4);
             }
+        }
+
+        function selectGuess(guess) {
+            userGuess = guess;
+            startButton.disabled = false;
         }
 
         function initializeGame() {
@@ -385,13 +420,11 @@
         }
 
         function startGame() {
-            userGuess = parseInt(document.getElementById('guess').value);
             if (![1, 2, 3].includes(userGuess)) {
-                alert('Please enter a valid guess (1, 2, or 3).');
+                alert('Please select a valid plant (1, 2, or 3).');
                 return;
             }
-            document.getElementById('guess').disabled = true;
-            document.querySelector('button[onclick="startGame()"]').disabled = true;
+            startButton.disabled = true;
             resizeCanvas();
             initializeGame();
             gameLoop();
@@ -498,8 +531,8 @@
 
         function resetGame() {
             gameEnded = false;
-            document.getElementById('guess').disabled = false;
-            document.querySelector('button[onclick="startGame()"]').disabled = false;
+            userGuess = null;
+            startButton.disabled = true;
         }
 
         function gameLoop() {
