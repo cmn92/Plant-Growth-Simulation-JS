@@ -28,9 +28,9 @@
         }
 
         h1 {
-            font-size: 1.8rem;
+            font-size: 2rem;
             text-align: center;
-            margin: 10px;
+            margin: 20px 0;
         }
 
         .container {
@@ -45,9 +45,18 @@
             background: var(--card-bg);
             color: var(--text-color);
             border-radius: 8px;
-            padding: 10px;
+            padding: 15px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            flex: 1;
             min-width: 300px;
+            max-width: 400px;
+        }
+
+        .game-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
         }
 
         canvas {
@@ -55,12 +64,11 @@
             border-radius: 10px;
             background: linear-gradient(135deg, var(--card-bg), var(--bg-color));
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            width: 100%; /* Maintain the width relative to the container */
-            max-width: 400px; /* Add a maximum width */
-            height: 300px; /* Set a fixed height */
-            object-fit: contain; /* Ensure it scales properly */
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            object-fit: contain;
         }
-
 
         .description {
             display: flex;
@@ -76,10 +84,11 @@
         }
 
         input[type="number"], button {
-            padding: 8px 15px;
+            padding: 10px 15px;
             font-size: 1rem;
             border-radius: 5px;
             border: 1px solid var(--border-color);
+            margin: 10px 0;
         }
 
         .toggle-theme {
@@ -93,6 +102,22 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 1rem;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .sidebar, .game-section, .stats {
+                width: 90%;
+            }
+
+            canvas {
+                height: 250px;
+            }
         }
     </style>
 </head>
@@ -103,7 +128,7 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <h3>Plants Description</h3>
-            <p>There are three plants each with different strengths competing for resources (sunlight and water).</p>
+            <p>There are three plants, each with different strengths, competing for resources (sunlight and water).</p>
             <p>And avoiding hazards (environmental and pest).</p>
             <div class="description">
                 <img src="assets/plant1.png" alt="Plant 1">
@@ -123,7 +148,7 @@
         <div class="game-section">
             <p>Guess which plant will survive the longest and win!</p>
             <label for="guess">Your guess (1, 2, or 3): </label>
-            <input type="number" id="guess" min="1" max="3">
+            <input type="number" id="guess" min="1" max="3" placeholder="Enter your guess">
             <button onclick="startGame()">Start Game</button>
             <canvas id="gameCanvas"></canvas>
         </div>
@@ -148,217 +173,6 @@
                 document.body.classList.add('dark-mode');
             }
         };
-        
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const infoDiv = document.getElementById('realTimeInfo');
-
-        let userGuess = null;
-        let plants = [];
-        let sunlight = { x: 0, y: 0, img: null };
-        let water = { x: 0, y: 0, img: null };
-        let hazards = [];
-        let gameEnded = false;
-
-        // Load images
-        const plantImages = [
-            new Image(),
-            new Image(),
-            new Image()
-        ];
-        plantImages[0].src = 'assets/plant1.png';
-        plantImages[1].src = 'assets/plant2.png';
-        plantImages[2].src = 'assets/plant3.png';
-
-        const sunlightImage = new Image();
-        sunlightImage.src = 'assets/sunlight.png';
-
-        const waterImage = new Image();
-        waterImage.src = 'assets/water.png';
-
-        const hazardImage = new Image();
-        hazardImage.src = 'assets/hazard.png';
-
-        const staticHazardImage = new Image();
-        staticHazardImage.src = 'assets/hazard2.png';
-
-        // Set canvas dimensions dynamically
-        function resizeCanvas() {
-            const screenWidth = window.innerWidth;
-            const screenHeight = window.innerHeight;
-            canvas.width = Math.min(800, screenWidth * 0.8);
-            canvas.height = Math.min(600, screenHeight * 0.6);
-        }
-
-        // Initialize game data
-        function initializeGame() {
-            const canvasWidth = canvas.width;
-            const canvasHeight = canvas.height;
-
-            sunlight = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5, img: sunlightImage };
-            water = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5 + canvasHeight * 0.5, img: waterImage };
-            
-            hazards = Array.from({ length: 3 }, () => ({
-                x: Math.random() * canvasWidth,
-                y: Math.random() * canvasHeight,
-                dx: Math.random() * 2 - 1,
-                dy: Math.random() * 2 - 1,
-                img: hazardImage,
-            })).concat(
-                Array.from({ length: 2 }, () => ({
-                    x: Math.random() * canvasWidth,
-                    y: Math.random() * canvasHeight,
-                    dx: 0,
-                    dy: 0,
-                    img: staticHazardImage,
-                }))
-            );
-
-            plants = Array.from({ length: 3 }, (_, i) => ({
-                id: i + 1,
-                x: Math.random() * canvasWidth,
-                y: canvasHeight - 30,
-                health: 100,
-                growth_rate: Math.random() * 3 + 1,
-                hazard_resistance: Math.random() * 0.5 + 0.5,
-                resource_efficiency: Math.random() * 0.5 + 0.5,
-                resources_collected: 0,
-                distance_traveled: 0,
-                img: plantImages[i],
-            }));
-        }
-
-        // Start the game
-        function startGame() {
-            userGuess = parseInt(document.getElementById('guess').value);
-            if (![1, 2, 3].includes(userGuess)) {
-                alert('Please enter a valid guess (1, 2, or 3).');
-                return;
-            }
-            document.getElementById('guess').disabled = true;
-            document.querySelector('button').disabled = true;
-            resizeCanvas();
-            initializeGame();
-            gameLoop();
-        }
-
-        // Update game state
-        function updateGame() {
-            let alivePlants = 0;
-
-            plants.forEach(plant => {
-                if (plant.health <= 0) return;
-
-                alivePlants++;
-
-                const distToSunlight = Math.sqrt((sunlight.x - plant.x) ** 2 + (sunlight.y - plant.y) ** 2);
-                const distToWater = Math.sqrt((water.x - plant.x) ** 2 + (water.y - plant.y) ** 2);
-
-                const target = distToSunlight < distToWater ? sunlight : water;
-
-                const dx = target.x - plant.x;
-                const dy = target.y - plant.y;
-                const distance = Math.sqrt(dx ** 2 + dy ** 2);
-
-                if (distance > 0) {
-                    plant.x += (dx / distance) * plant.growth_rate;
-                    plant.y += (dy / distance) * plant.growth_rate;
-                }
-
-                plant.health -= 0.1;
-
-                if (distToSunlight < 30) {
-                    plant.health += 10 * plant.resource_efficiency;
-                    plant.resources_collected += 1;
-                    sunlight.x = Math.random() * canvas.width;
-                    sunlight.y = Math.random() * canvas.height * 0.5;
-                } else if (distToWater < 30) {
-                    plant.health += 5 * plant.resource_efficiency;
-                    plant.resources_collected += 1;
-                    water.x = Math.random() * canvas.width;
-                    water.y = Math.random() * canvas.height * 0.5 + canvas.height * 0.5;
-                }
-
-                hazards.forEach(hazard => {
-                    const hazardDist = Math.sqrt((hazard.x - plant.x) ** 2 + (hazard.y - plant.y) ** 2);
-                    if (hazardDist < 30) {
-                        plant.health -= 15 * (1 - plant.hazard_resistance);
-                    }
-                });
-            });
-
-            hazards.forEach(hazard => {
-                hazard.x += hazard.dx;
-                hazard.y += hazard.dy;
-
-                if (hazard.x < 0 || hazard.x > canvas.width) hazard.dx *= -1;
-                if (hazard.y < 0 || hazard.y > canvas.height) hazard.dy *= -1;
-            });
-
-            if (alivePlants === 1) {
-                gameEnded = true;
-                endGame();
-            }
-        }
-
-        // Draw game elements
-        function drawGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            ctx.drawImage(sunlight.img, sunlight.x - 30, sunlight.y - 30, 60, 60);
-            ctx.drawImage(water.img, water.x - 30, water.y - 30, 60, 60);
-
-            hazards.forEach(hazard => {
-                ctx.drawImage(hazard.img, hazard.x - 20, hazard.y - 20, 40, 40);
-            });
-
-            plants.forEach(plant => {
-                if (plant.health > 0) {
-                    ctx.drawImage(plant.img, plant.x - 15, plant.y - 15, 40, 40);
-                }
-            });
-
-            updateRealTimeInfo();
-        }
-
-        // Update real-time information
-        function updateRealTimeInfo() {
-            infoDiv.innerHTML = '';
-            plants.forEach(plant => {
-                const status = plant.health > 0 ? `Health: ${plant.health.toFixed(1)}, Resources: ${plant.resources_collected}` : 'Dead';
-                infoDiv.innerHTML += `<div><strong>Plant ${plant.id}:</strong> ${status}</div>`;
-            });
-        }
-
-        // End game
-        function endGame() {
-            const bestPlant = plants.sort((a, b) => b.resources_collected - a.resources_collected)[0];
-            setTimeout(() => {
-                if (bestPlant.id === userGuess) {
-                    alert(`🎉 Congratulations! Your guess was correct! Plant ${bestPlant.id} performed the best!`);
-                } else {
-                    alert(`Better luck next time! The best-performing plant was Plant ${bestPlant.id}.`);
-                }
-                resetGame();
-            }, 200);
-        }
-
-        // Reset game
-        function resetGame() {
-            gameEnded = false;
-            document.getElementById('guess').disabled = false;
-            document.querySelector('button').disabled = false;
-        }
-
-        // Main game loop
-        function gameLoop() {
-            if (!gameEnded) {
-                updateGame();
-                drawGame();
-                requestAnimationFrame(gameLoop);
-            }
-        }
     </script>
 </body>
 </html>
-
