@@ -101,6 +101,13 @@
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
             max-height: 80vh;
             overflow-y: auto;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dark mode styles for sidebar */
+        .dark-mode .sidebar {
+            background: var(--card-bg);
+            color: var(--text-color);
         }
 
         .game-section {
@@ -109,6 +116,7 @@
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .stats {
@@ -117,6 +125,7 @@
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         h3 {
@@ -147,35 +156,30 @@
             height: auto;
             max-width: 100%;
             max-height: 400px;
-            margin-top: 20px; /* Added spacing above canvas */
+            margin-top: 30px; /* Increased spacing above canvas */
         }
 
         /* Plant Selection Buttons */
         .guess-buttons {
             display: flex;
-            gap: 10px;
-            margin-top: 10px;
+            gap: 20px; /* Increased spacing between buttons */
+            margin-top: 20px; /* Added spacing above buttons */
         }
 
         .guess-buttons button {
             background: var(--accent-color);
             color: #fff;
             border: none;
-            padding: 10px 20px;
+            padding: 15px;
             border-radius: 50%; /* Circular buttons */
             cursor: pointer;
             font-size: 1rem;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .guess-buttons button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 10px var(--accent-color);
         }
 
         /* Specific Button Colors */
@@ -192,28 +196,28 @@
         }
 
         .guess-buttons button:hover {
-            opacity: 0.8;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--accent-color);
+            opacity: 0.9;
         }
 
         /* Feedback Animations */
         .flash-green {
-            animation: flashGreen 0.5s;
+            animation: flashGreen 0.7s forwards;
         }
 
         .flash-red {
-            animation: flashRed 0.5s;
+            animation: flashRed 0.7s forwards;
         }
 
         @keyframes flashGreen {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% { background-color: rgba(76, 175, 80, 0.8); }
+            100% { background-color: transparent; }
         }
 
         @keyframes flashRed {
-            0% { opacity: 1; }
-            50% { opacity: 0.3; }
-            100% { opacity: 1; }
+            0% { background-color: rgba(244, 67, 54, 0.8); }
+            100% { background-color: transparent; }
         }
 
         /* Large screens layout */
@@ -282,7 +286,7 @@
             <!-- Sidebar -->
             <div class="sidebar">
                 <h3>About the Plants</h3>
-                <p>In this simulation, three unique plants each have special strengths. They race to gather sunlight and water, while dodging hazards. Cheer on your choice as they struggle for survival!</p>
+                <p>In this simulation, three unique plants each have special strengths. They race to gather sunlight and water, while dodging hazards. Cheer on your choice as they strive for survival!</p>
                 <div class="description">
                     <img src="assets/plant1.png" alt="Plant 1">
                     <p><strong>Plant 1:</strong> Extremely fast growth, but average resilience and efficiency.</p>
@@ -329,9 +333,9 @@
                 <div class="guess-container">
                     <p>Select a Plant:</p>
                     <div class="guess-buttons">
-                        <button class="plant1" onclick="selectGuess(1)" title="Plant 1">1</button>
-                        <button class="plant2" onclick="selectGuess(2)" title="Plant 2">2</button>
-                        <button class="plant3" onclick="selectGuess(3)" title="Plant 3">3</button>
+                        <button class="plant1" onclick="selectGuess(1)">1</button>
+                        <button class="plant2" onclick="selectGuess(2)">2</button>
+                        <button class="plant3" onclick="selectGuess(3)">3</button>
                     </div>
                 </div>
                 <canvas id="gameCanvas"></canvas>
@@ -344,6 +348,11 @@
             </div>
         </div>
     </div>
+
+    <!-- Sound Effects -->
+    <audio id="collectSound" src="assets/collect.mp3"></audio>
+    <audio id="hitSound" src="assets/hit.mp3"></audio>
+    <audio id="gameEndSound" src="assets/game-end.mp3"></audio>
 
     <script>
         function toggleTheme() {
@@ -365,10 +374,12 @@
 
         let userGuess = null;
         let plants = [];
-        let sunlight = { x: 0, y: 0, img: null, radius: 30 };
-        let water = { x: 0, y: 0, img: null, radius: 30 };
+        let sunlight = { x: 0, y: 0, img: null };
+        let water = { x: 0, y: 0, img: null };
         let hazards = [];
         let gameEnded = false;
+        let gameDuration = 120; // Game lasts for 120 seconds (2 minutes)
+        let gameTimer = null;
 
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -404,6 +415,7 @@
             if (imagesLoaded === totalImages && userGuess !== null) {
                 initializeGame();
                 gameLoop();
+                startTimer();
             }
         }
 
@@ -442,8 +454,7 @@
             if (imagesLoaded === totalImages) {
                 initializeGame();
                 gameLoop();
-            } else {
-                alert('Images are still loading. Please wait a moment and try again.');
+                startTimer();
             }
         }
 
@@ -452,26 +463,21 @@
             const canvasHeight = canvas.height;
 
             // Randomize resource locations
-            sunlight.x = Math.random() * (canvasWidth - sunlight.radius * 2) + sunlight.radius;
-            sunlight.y = Math.random() * (canvasHeight * 0.5 - sunlight.radius * 2) + sunlight.radius;
-            sunlight.img = sunlightImage;
-
-            water.x = Math.random() * (canvasWidth - water.radius * 2) + water.radius;
-            water.y = Math.random() * (canvasHeight * 0.5 - water.radius * 2) + (canvasHeight * 0.5) + water.radius;
-            water.img = waterImage;
-
+            sunlight = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5, img: sunlightImage, radius: 30 };
+            water = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5 + (canvasHeight * 0.5), img: waterImage, radius: 30 };
+            
             // Hazards (Biotic and Environmental Stress)
             hazards = Array.from({ length: 3 }, () => ({
-                x: Math.random() * (canvasWidth - 40) + 20,
-                y: Math.random() * (canvasHeight - 40) + 20,
-                dx: (Math.random() * 4 - 2), // Increased speed for more noticeable movement
-                dy: (Math.random() * 4 - 2),
+                x: Math.random() * canvasWidth,
+                y: Math.random() * canvasHeight,
+                dx: Math.random() * 2 - 1,
+                dy: Math.random() * 2 - 1,
                 img: hazardImage,
                 radius: 20
             })).concat(
                 Array.from({ length: 2 }, () => ({
-                    x: Math.random() * (canvasWidth - 40) + 20,
-                    y: Math.random() * (canvasHeight - 40) + 20,
+                    x: Math.random() * canvasWidth,
+                    y: Math.random() * canvasHeight,
                     dx: 0,
                     dy: 0,
                     img: staticHazardImage,
@@ -483,47 +489,60 @@
             plants = [
                 {
                     id: 1,
-                    x: Math.random() * (canvasWidth - 40) + 20,
-                    y: canvasHeight - 40,
+                    x: Math.random() * canvasWidth,
+                    y: canvasHeight - 50,
                     health: 100,
-                    growth_rate: 3 + Math.random() * 1, 
-                    hazard_resistance: 0.5 + Math.random() * 0.3,
-                    resource_efficiency: 0.5 + Math.random() * 0.3,
+                    growth_rate: 3 + Math.random()*1, 
+                    hazard_resistance: 0.5 + Math.random()*0.3,
+                    resource_efficiency: 0.5 + Math.random()*0.3,
                     resources_collected: 0,
                     img: plantImages[0],
-                    radius: 20,
+                    radius: 25,
                     isFlashing: false,
-                    flashColor: ''
+                    flashColor: '',
+                    color: 'var(--color-plant1)'
                 },
                 {
                     id: 2,
-                    x: Math.random() * (canvasWidth - 40) + 20,
-                    y: canvasHeight - 40,
+                    x: Math.random() * canvasWidth,
+                    y: canvasHeight - 50,
                     health: 100,
-                    growth_rate: 1.5 + Math.random() * 1,
-                    hazard_resistance: 0.8 + Math.random() * 0.2,
-                    resource_efficiency: 0.5 + Math.random() * 0.3,
+                    growth_rate: 1.5 + Math.random()*1,
+                    hazard_resistance: 0.8 + Math.random()*0.2,
+                    resource_efficiency: 0.5 + Math.random()*0.3,
                     resources_collected: 0,
                     img: plantImages[1],
-                    radius: 20,
+                    radius: 25,
                     isFlashing: false,
-                    flashColor: ''
+                    flashColor: '',
+                    color: 'var(--color-plant2)'
                 },
                 {
                     id: 3,
-                    x: Math.random() * (canvasWidth - 40) + 20,
-                    y: canvasHeight - 40,
+                    x: Math.random() * canvasWidth,
+                    y: canvasHeight - 50,
                     health: 100,
-                    growth_rate: 2 + Math.random() * 1,
-                    hazard_resistance: 0.5 + Math.random() * 0.3,
-                    resource_efficiency: 0.8 + Math.random() * 0.2,
+                    growth_rate: 2 + Math.random()*1,
+                    hazard_resistance: 0.5 + Math.random()*0.3,
+                    resource_efficiency: 0.8 + Math.random()*0.2,
                     resources_collected: 0,
                     img: plantImages[2],
-                    radius: 20,
+                    radius: 25,
                     isFlashing: false,
-                    flashColor: ''
+                    flashColor: '',
+                    color: 'var(--color-plant3)'
                 }
             ];
+        }
+
+        function startGame() {
+            if (![1, 2, 3].includes(userGuess)) {
+                alert('Please select a valid plant.');
+                return;
+            }
+            resizeCanvas();
+            // initializeGame(); // Moved to imageLoaded
+            // gameLoop(); // Moved to imageLoaded
         }
 
         function updateGame() {
@@ -557,27 +576,30 @@
                 plant.health -= 0.2;
 
                 // Collect resources
-                if (distToSunlight < (sunlight.radius + plant.radius)) {
-                    plant.health += 15 * plant.resource_efficiency; // Increased health gain for more dramatic effect
+                if (distToSunlight < (sunlight.radius)) {
+                    plant.health += 10 * plant.resource_efficiency;
                     plant.resources_collected += 1;
-                    sunlight.x = Math.random() * (canvas.width - sunlight.radius * 2) + sunlight.radius;
-                    sunlight.y = Math.random() * (canvas.height * 0.5 - sunlight.radius * 2) + sunlight.radius;
+                    sunlight.x = Math.random() * canvas.width;
+                    sunlight.y = Math.random() * canvas.height * 0.5;
                     triggerFlash(plant, 'green');
+                    playSound('collect');
                 } 
-                if (distToWater < (water.radius + plant.radius)) { // Allow collecting both if in range
-                    plant.health += 10 * plant.resource_efficiency; // Increased health gain
+                if (distToWater < (water.radius)) { // Allow collecting both if in range
+                    plant.health += 5 * plant.resource_efficiency;
                     plant.resources_collected += 1;
-                    water.x = Math.random() * (canvas.width - water.radius * 2) + water.radius;
-                    water.y = Math.random() * (canvas.height * 0.5 - water.radius * 2) + (canvas.height * 0.5) + water.radius;
+                    water.x = Math.random() * canvas.width;
+                    water.y = Math.random() * canvas.height * 0.5 + (canvas.height * 0.5);
                     triggerFlash(plant, 'green');
+                    playSound('collect');
                 }
 
                 // Hazards damage
                 hazards.forEach(hazard => {
                     const hazardDist = getDistance(plant.x, plant.y, hazard.x, hazard.y);
                     if (hazardDist < (plant.radius + hazard.radius)) {
-                        plant.health -= 25 * (1 - plant.hazard_resistance); // Increased damage for dramatic effect
+                        plant.health -= 15 * (1 - plant.hazard_resistance);
                         triggerFlash(plant, 'red');
+                        playSound('hit');
                     }
                 });
             });
@@ -587,24 +609,26 @@
                 hazard.x += hazard.dx;
                 hazard.y += hazard.dy;
 
-                // Bounce off walls
                 if (hazard.x < hazard.radius || hazard.x > canvas.width - hazard.radius) hazard.dx *= -1;
                 if (hazard.y < hazard.radius || hazard.y > canvas.height - hazard.radius) hazard.dy *= -1;
             });
 
-            // Check end conditions
-            if (alivePlants === 1) {
-                // Exactly one plant alive
-                if (!gameEnded) {
-                    gameEnded = true;
-                    endGame();
-                }
-            } else if (alivePlants === 0) {
-                // All died simultaneously
-                if (!gameEnded) {
-                    gameEnded = true;
-                    endGame(true);
-                }
+            // Check end conditions based on game duration
+            if (gameDuration <= 0 && !gameEnded) {
+                gameEnded = true;
+                endGame(false, true); // false for not all dead, true for time up
+            }
+
+            // Check if only one plant is left alive
+            if (alivePlants === 1 && !gameEnded) {
+                gameEnded = true;
+                endGame();
+            }
+
+            // Check if all plants are dead
+            if (alivePlants === 0 && !gameEnded) {
+                gameEnded = true;
+                endGame(true);
             }
         }
 
@@ -630,7 +654,7 @@
                         ctx.beginPath();
                         ctx.arc(plant.x, plant.y, plant.radius, 0, 2 * Math.PI);
                         ctx.fillStyle = plant.flashColor;
-                        ctx.globalAlpha = 0.7; // Increased opacity for more dramatic effect
+                        ctx.globalAlpha = 0.7;
                         ctx.fill();
                         ctx.globalAlpha = 1.0;
                     }
@@ -648,14 +672,25 @@
                     : 'Dead';
                 infoDiv.innerHTML += `<div><strong>Plant ${plant.id}:</strong> ${status}</div>`;
             });
+
+            // Display remaining time
+            infoDiv.innerHTML += `<div><strong>Time Left:</strong> ${gameDuration} seconds</div>`;
         }
 
-        function endGame(allDead = false) {
+        function endGame(allDead = false, timeUp = false) {
+            // Stop the timer
+            clearInterval(gameTimer);
+
             // Determine best plant by resources collected
             const bestPlant = plants.sort((a, b) => b.resources_collected - a.resources_collected)[0];
 
+            // Play game end sound
+            playSound('gameEnd');
+
             setTimeout(() => {
-                if (!allDead) {
+                if (timeUp) {
+                    alert(`⏰ Time's up! Plant ${bestPlant.id} collected the most resources.`);
+                } else if (!allDead) {
                     // One plant survived
                     if (bestPlant.id === userGuess) {
                         alert(`🎉 Congratulations! Your chosen plant (Plant ${bestPlant.id}) outlasted the others and thrived the most!`);
@@ -665,9 +700,9 @@
                 } else {
                     // All plants died
                     if (bestPlant.id === userGuess) {
-                        alert(`All plants perished! But Plant ${bestPlant.id}, your chosen one, collected the most resources before dying. Great guess!`);
+                        alert(`💀 All plants perished! But Plant ${bestPlant.id}, your chosen one, collected the most resources before dying. Great guess!`);
                     } else {
-                        alert(`All plants died, but Plant ${bestPlant.id} managed to collect the most resources. Better luck next time!`);
+                        alert(`💀 All plants died, but Plant ${bestPlant.id} managed to collect the most resources. Better luck next time!`);
                     }
                 }
                 resetGame();
@@ -679,8 +714,12 @@
             userGuess = null;
             plants = [];
             hazards = [];
+            sunlight = { x: 0, y: 0, img: null, radius: 30 };
+            water = { x: 0, y: 0, img: null, radius: 30 };
             infoDiv.innerHTML = '';
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            clearInterval(gameTimer);
+            gameDuration = 120; // Reset game duration
         }
 
         function gameLoop() {
@@ -701,11 +740,55 @@
         // Function to trigger flashing feedback
         function triggerFlash(plant, color) {
             plant.isFlashing = true;
-            plant.flashColor = color === 'green' ? 'rgba(76, 175, 80, 0.7)' : 'rgba(244, 67, 54, 0.7)'; // Green or Red
+            plant.flashColor = color === 'green' ? 'rgba(76, 175, 80, 0.5)' : 'rgba(244, 67, 54, 0.5)'; // Green or Red
             setTimeout(() => {
                 plant.isFlashing = false;
                 plant.flashColor = '';
-            }, 500); // Increased duration for more dramatic effect
+            }, 700);
+        }
+
+        // Sound Effects
+        function playSound(effect) {
+            const collectSound = document.getElementById('collectSound');
+            const hitSound = document.getElementById('hitSound');
+            const gameEndSound = document.getElementById('gameEndSound');
+
+            switch(effect) {
+                case 'collect':
+                    collectSound.currentTime = 0;
+                    collectSound.play();
+                    break;
+                case 'hit':
+                    hitSound.currentTime = 0;
+                    hitSound.play();
+                    break;
+                case 'gameEnd':
+                    gameEndSound.currentTime = 0;
+                    gameEndSound.play();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // Start Game Timer
+        function startTimer() {
+            gameTimer = setInterval(() => {
+                if (gameDuration > 0) {
+                    gameDuration--;
+                }
+            }, 1000);
+        }
+
+        // Ensure that clicking buttons after game ends can start a new game
+        function selectGuess(guess) {
+            if (userGuess !== null && !gameEnded) return; // Prevent multiple selections during active game
+            userGuess = guess;
+            if (imagesLoaded === totalImages) {
+                initializeGame();
+                gameLoop();
+                startTimer();
+            }
         }
     </script>
 </body>
