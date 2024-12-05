@@ -9,15 +9,14 @@
             --bg-color: #f3f4f7;
             --text-color: #333;
             --card-bg: #ffffff;
-            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #888;
         }
 
-        /* Dark Mode Variables */
         .dark-mode {
             --bg-color: #121212;
             --text-color: #e0e0e0;
             --card-bg: #1e1e1e;
-            --shadow-color: rgba(0, 0, 0, 0.5);
+            --border-color: #555;
         }
 
         body {
@@ -42,13 +41,25 @@
             padding: 10px;
         }
 
-        .sidebar, .stats, .game-section {
+        .sidebar, .game-section, .stats {
             background: var(--card-bg);
             color: var(--text-color);
             border-radius: 8px;
             padding: 10px;
-            box-shadow: 0px 4px 10px var(--shadow-color);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             min-width: 300px;
+        }
+
+        canvas {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            width: 100%;
+        }
+
+        .description {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
         .description img {
@@ -58,10 +69,11 @@
             border-radius: 5px;
         }
 
-        canvas {
-            border: 2px solid var(--text-color);
-            border-radius: 10px;
-            width: 100%;
+        input[type="number"], button {
+            padding: 8px 15px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
         }
 
         .toggle-theme {
@@ -70,12 +82,11 @@
             right: 10px;
             background: var(--card-bg);
             color: var(--text-color);
-            border: 1px solid var(--text-color);
+            border: 1px solid var(--border-color);
             padding: 8px 15px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 1rem;
-            box-shadow: 0px 2px 6px var(--shadow-color);
         }
     </style>
 </head>
@@ -83,18 +94,35 @@
     <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark/Light Mode</button>
     <h1>Plant Growth Game</h1>
     <div class="container">
+        <!-- Sidebar -->
         <div class="sidebar">
             <h3>Plants Description</h3>
             <p>There are three plants each with different strengths competing for resources (sunlight and water).</p>
+            <p>And avoiding hazards (environmental and pest).</p>
             <div class="description">
                 <img src="assets/plant1.png" alt="Plant 1">
                 <p><strong>Plant 1:</strong> The fastest growing plant.</p>
             </div>
+            <div class="description">
+                <img src="assets/plant2.png" alt="Plant 2">
+                <p><strong>Plant 2:</strong> The most resilient plant.</p>
+            </div>
+            <div class="description">
+                <img src="assets/plant3.png" alt="Plant 3">
+                <p><strong>Plant 3:</strong> The most resource-efficient plant.</p>
+            </div>
         </div>
+
+        <!-- Game Section -->
         <div class="game-section">
             <p>Guess which plant will survive the longest and win!</p>
+            <label for="guess">Your guess (1, 2, or 3): </label>
+            <input type="number" id="guess" min="1" max="3">
+            <button onclick="startGame()">Start Game</button>
             <canvas id="gameCanvas"></canvas>
         </div>
+
+        <!-- Stats Section -->
         <div class="stats">
             <h3>Real-Time Stats</h3>
             <div id="realTimeInfo"></div>
