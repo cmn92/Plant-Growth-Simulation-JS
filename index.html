@@ -205,9 +205,15 @@
 
                 alivePlants++;
 
-                // Move plants toward sunlight or water
-                const dx = sunlight.x - plant.x;
-                const dy = sunlight.y - plant.y;
+                // Determine closest target (sunlight or water)
+                const distToSunlight = Math.sqrt((sunlight.x - plant.x) ** 2 + (sunlight.y - plant.y) ** 2);
+                const distToWater = Math.sqrt((water.x - plant.x) ** 2 + (water.y - plant.y) ** 2);
+
+                const target = distToSunlight < distToWater ? sunlight : water;
+
+                // Move plants toward the target
+                const dx = target.x - plant.x;
+                const dy = target.y - plant.y;
                 const distance = Math.sqrt(dx ** 2 + dy ** 2);
 
                 if (distance > 0) {
@@ -215,19 +221,16 @@
                     plant.y += (dy / distance) * plant.growth_rate;
                 }
 
-                // Reduce health over time
+                // Gradual health decrease
                 plant.health -= 0.1;
 
-                // Collect sunlight
-                if (Math.abs(plant.x - sunlight.x) < 30 && Math.abs(plant.y - sunlight.y) < 30) {
+                // Collect sunlight or water
+                if (distToSunlight < 30) {
                     plant.health += 10 * plant.resource_efficiency;
                     plant.resources_collected += 1;
                     sunlight.x = Math.random() * canvas.width;
                     sunlight.y = Math.random() * canvas.height * 0.5;
-                }
-
-                // Collect water
-                if (Math.abs(plant.x - water.x) < 30 && Math.abs(plant.y - water.y) < 30) {
+                } else if (distToWater < 30) {
                     plant.health += 5 * plant.resource_efficiency;
                     plant.resources_collected += 1;
                     water.x = Math.random() * canvas.width;
@@ -278,11 +281,21 @@
         // End game
         function endGame() {
             const bestPlant = plants.sort((a, b) => b.resources_collected - a.resources_collected)[0];
-            if (bestPlant.id === userGuess) {
-                alert(`🎉 Congratulations! Your guess was correct! Plant ${bestPlant.id} performed the best!`);
-            } else {
-                alert(`Better luck next time! The best-performing plant was Plant ${bestPlant.id}.`);
-            }
+            setTimeout(() => {
+                if (bestPlant.id === userGuess) {
+                    alert(`🎉 Congratulations! Your guess was correct! Plant ${bestPlant.id} performed the best!`);
+                } else {
+                    alert(`Better luck next time! The best-performing plant was Plant ${bestPlant.id}.`);
+                }
+                resetGame();
+            }, 200);
+        }
+
+        // Reset game
+        function resetGame() {
+            gameEnded = false;
+            document.getElementById('guess').disabled = false;
+            document.querySelector('button').disabled = false;
         }
 
         // Main game loop
