@@ -271,18 +271,18 @@
             <!-- Sidebar -->
             <div class="sidebar">
                 <h3>About the Plants</h3>
-                <p>In this simulation, three unique plants each have special strengths. They compete to collect sunlight and water, while also overcoming various hazards that threaten their survival. Which one will endure?</p>
+                <p>In this simulation, three unique plants each have special strengths. They race to gather sunlight and water, while dodging hazards. Cheer on your choice as they struggle for survival!</p>
                 <div class="description">
                     <img src="assets/plant1.png" alt="Plant 1">
-                    <p><strong>Plant 1:</strong> Grows at a rapid pace.</p>
+                    <p><strong>Plant 1:</strong> Extremely fast growth, but average resilience and efficiency.</p>
                 </div>
                 <div class="description">
                     <img src="assets/plant2.png" alt="Plant 2">
-                    <p><strong>Plant 2:</strong> Highly resilient against hazards.</p>
+                    <p><strong>Plant 2:</strong> Tough and resilient, hazards barely faze it, though it's slower.</p>
                 </div>
                 <div class="description">
                     <img src="assets/plant3.png" alt="Plant 3">
-                    <p><strong>Plant 3:</strong> Extremely efficient in using resources.</p>
+                    <p><strong>Plant 3:</strong> Highly efficient at using resources, thrives with less input.</p>
                 </div>
             </div>
 
@@ -296,7 +296,7 @@
         <div class="right-column">
             <!-- Game Section -->
             <div class="game-section">
-                <p>Select the plant you think will survive the longest. The game will start immediately when you choose one.</p>
+                <p>Pick a plant to back and watch the race unfold!</p>
                 <div class="guess-container">
                     <p>Select a Plant:</p>
                     <div class="guess-buttons">
@@ -361,7 +361,7 @@
         function resizeCanvas() {
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
-            // Keep a reasonable size to avoid excessive scrolling
+            // Keep a reasonable size
             if (screenWidth > 1024) {
                 canvas.width = Math.min(800, screenWidth * 0.7);
                 canvas.height = Math.min(600, screenHeight * 0.6);
@@ -380,9 +380,11 @@
             const canvasWidth = canvas.width;
             const canvasHeight = canvas.height;
 
+            // Randomize resource locations
             sunlight = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5, img: sunlightImage };
-            water = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5 + canvasHeight * 0.5, img: waterImage };
+            water = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5 + (canvasHeight * 0.5), img: waterImage };
             
+            // Hazards moving and static
             hazards = Array.from({ length: 3 }, () => ({
                 x: Math.random() * canvasWidth,
                 y: Math.random() * canvasHeight,
@@ -399,22 +401,50 @@
                 }))
             );
 
-            plants = Array.from({ length: 3 }, (_, i) => ({
-                id: i + 1,
-                x: Math.random() * canvasWidth,
-                y: canvasHeight - 30,
-                health: 100,
-                growth_rate: Math.random() * 3 + 1,
-                hazard_resistance: Math.random() * 0.5 + 0.5,
-                resource_efficiency: Math.random() * 0.5 + 0.5,
-                resources_collected: 0,
-                img: plantImages[i],
-            }));
+            // Distinguish plants clearly
+            // Plant 1: Fast growth, normal resilience, normal efficiency
+            // Plant 2: Moderate growth, high hazard resistance, normal efficiency
+            // Plant 3: Moderate growth, normal resistance, high efficiency
+            plants = [
+                {
+                    id: 1,
+                    x: Math.random() * canvasWidth,
+                    y: canvasHeight - 30,
+                    health: 100,
+                    growth_rate: 3 + Math.random()*1, 
+                    hazard_resistance: 0.5 + Math.random()*0.3,
+                    resource_efficiency: 0.5 + Math.random()*0.3,
+                    resources_collected: 0,
+                    img: plantImages[0],
+                },
+                {
+                    id: 2,
+                    x: Math.random() * canvasWidth,
+                    y: canvasHeight - 30,
+                    health: 100,
+                    growth_rate: 1.5 + Math.random()*1,
+                    hazard_resistance: 0.8 + Math.random()*0.2,
+                    resource_efficiency: 0.5 + Math.random()*0.3,
+                    resources_collected: 0,
+                    img: plantImages[1],
+                },
+                {
+                    id: 3,
+                    x: Math.random() * canvasWidth,
+                    y: canvasHeight - 30,
+                    health: 100,
+                    growth_rate: 2 + Math.random()*1,
+                    hazard_resistance: 0.5 + Math.random()*0.3,
+                    resource_efficiency: 0.8 + Math.random()*0.2,
+                    resources_collected: 0,
+                    img: plantImages[2],
+                }
+            ];
         }
 
         function startGame() {
             if (![1, 2, 3].includes(userGuess)) {
-                alert('Please select a valid plant (1, 2, or 3).');
+                alert('Please select a valid plant.');
                 return;
             }
             resizeCanvas();
@@ -430,22 +460,25 @@
 
                 alivePlants++;
 
-                const distToSunlight = Math.sqrt((sunlight.x - plant.x) ** 2 + (sunlight.y - plant.y) ** 2);
-                const distToWater = Math.sqrt((water.x - plant.x) ** 2 + (water.y - plant.y) ** 2);
+                const distToSunlight = Math.sqrt((sunlight.x - plant.x)**2 + (sunlight.y - plant.y)**2);
+                const distToWater = Math.sqrt((water.x - plant.x)**2 + (water.y - plant.y)**2);
 
                 const target = distToSunlight < distToWater ? sunlight : water;
 
                 const dx = target.x - plant.x;
                 const dy = target.y - plant.y;
-                const distance = Math.sqrt(dx ** 2 + dy ** 2);
+                const distance = Math.sqrt(dx**2 + dy**2);
 
+                // Move plant
                 if (distance > 0) {
                     plant.x += (dx / distance) * plant.growth_rate;
                     plant.y += (dy / distance) * plant.growth_rate;
                 }
 
-                plant.health -= 0.1;
+                // Natural health decay
+                plant.health -= 0.2;
 
+                // Collect resources
                 if (distToSunlight < 30) {
                     plant.health += 10 * plant.resource_efficiency;
                     plant.resources_collected += 1;
@@ -455,17 +488,19 @@
                     plant.health += 5 * plant.resource_efficiency;
                     plant.resources_collected += 1;
                     water.x = Math.random() * canvas.width;
-                    water.y = Math.random() * canvas.height * 0.5 + canvasHeight * 0.5;
+                    water.y = Math.random() * canvas.height * 0.5 + (canvas.height * 0.5);
                 }
 
+                // Hazards damage
                 hazards.forEach(hazard => {
-                    const hazardDist = Math.sqrt((hazard.x - plant.x) ** 2 + (hazard.y - plant.y) ** 2);
+                    const hazardDist = Math.sqrt((hazard.x - plant.x)**2 + (hazard.y - plant.y)**2);
                     if (hazardDist < 30) {
                         plant.health -= 15 * (1 - plant.hazard_resistance);
                     }
                 });
             });
 
+            // Move hazards
             hazards.forEach(hazard => {
                 hazard.x += hazard.dx;
                 hazard.y += hazard.dy;
@@ -474,9 +509,19 @@
                 if (hazard.y < 0 || hazard.y > canvas.height) hazard.dy *= -1;
             });
 
+            // Check end conditions
             if (alivePlants === 1) {
-                gameEnded = true;
-                endGame();
+                // Exactly one plant alive
+                if (!gameEnded) {
+                    gameEnded = true;
+                    endGame();
+                }
+            } else if (alivePlants === 0) {
+                // All died simultaneously, still pick a winner by resources
+                if (!gameEnded) {
+                    gameEnded = true;
+                    endGame(true);
+                }
             }
         }
 
@@ -509,13 +554,25 @@
             });
         }
 
-        function endGame() {
+        function endGame(allDead = false) {
+            // Determine best plant by resources collected
             const bestPlant = plants.sort((a, b) => b.resources_collected - a.resources_collected)[0];
+
             setTimeout(() => {
-                if (bestPlant.id === userGuess) {
-                    alert(`🎉 Congratulations! You guessed correctly! Plant ${bestPlant.id} thrived the most.`);
+                if (!allDead) {
+                    // One plant survived
+                    if (bestPlant.id === userGuess) {
+                        alert(`🎉 Congratulations! Your chosen plant (Plant ${bestPlant.id}) outlasted the others and thrived the most!`);
+                    } else {
+                        alert(`Better luck next time! Plant ${bestPlant.id} was the ultimate survivor.`);
+                    }
                 } else {
-                    alert(`Better luck next time! Plant ${bestPlant.id} was the top performer.`);
+                    // All died, pick the one who collected the most before dying
+                    if (bestPlant.id === userGuess) {
+                        alert(`All plants perished! But Plant ${bestPlant.id}, your chosen one, collected the most resources before dying. Great guess!`);
+                    } else {
+                        alert(`All plants died together, but Plant ${bestPlant.id} managed to collect the most resources. Better luck next time!`);
+                    }
                 }
                 resetGame();
             }, 200);
