@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"  
+    <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plant Growth Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -23,6 +23,10 @@
             --heading-color: #e0e0e0;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Roboto', sans-serif;
             background: var(--bg-color);
@@ -30,6 +34,7 @@
             margin: 0;
             padding: 0;
             transition: background 0.3s ease, color 0.3s ease;
+            overflow-x: hidden;
         }
 
         .header {
@@ -68,12 +73,16 @@
         }
 
         .container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
             padding: 20px;
-            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .left-column, .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         .sidebar, .game-section, .stats {
@@ -82,9 +91,6 @@
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
-            flex: 1;
-            min-width: 300px;
-            max-width: 400px;
         }
 
         h3 {
@@ -114,12 +120,6 @@
         .description p {
             margin: 0;
             font-size: 1rem;
-        }
-
-        .game-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
         .game-section p {
@@ -164,8 +164,8 @@
             background: linear-gradient(135deg, var(--card-bg), var(--bg-color));
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
-            height: 300px;
+            max-width: 100%;
+            height: auto;
             object-fit: contain;
             margin-top: 20px;
         }
@@ -179,20 +179,67 @@
             margin-bottom: 10px;
         }
 
-        @media (max-width: 768px) {
+        /* Large screens layout */
+        @media (min-width: 1025px) {
+            .container {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: space-between;
+            }
+
+            .left-column {
+                flex: 0 0 350px;
+                max-width: 350px;
+            }
+
+            .right-column {
+                flex: 1;
+            }
+        }
+
+        /* Medium screens */
+        @media (max-width: 1024px) {
             .container {
                 flex-direction: column;
                 align-items: center;
             }
 
             .sidebar, .game-section, .stats {
-                width: 90%;
+                width: 100%;
+                max-width: 500px;
+            }
+        }
+
+        /* Small screens (phones) */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+                padding: 10px;
+            }
+
+            .sidebar, .game-section, .stats {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .stats, .sidebar, .game-section {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            button, .toggle-theme, input[type="number"] {
+                font-size: 0.9rem;
             }
 
             canvas {
                 height: 250px;
             }
         }
+
     </style>
 </head>
 <body>
@@ -202,37 +249,41 @@
     </div>
 
     <div class="container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <h3>About the Plants</h3>
-            <p>In this simulation, three unique plants each have special strengths. They compete to collect sunlight and water, while also overcoming various hazards that threaten their survival. Which one will endure?</p>
-            <div class="description">
-                <img src="assets/plant1.png" alt="Plant 1">
-                <p><strong>Plant 1:</strong> Grows at a rapid pace.</p>
+        <div class="left-column">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h3>About the Plants</h3>
+                <p>In this simulation, three unique plants each have special strengths. They compete to collect sunlight and water, while also overcoming various hazards that threaten their survival. Which one will endure?</p>
+                <div class="description">
+                    <img src="assets/plant1.png" alt="Plant 1">
+                    <p><strong>Plant 1:</strong> Grows at a rapid pace.</p>
+                </div>
+                <div class="description">
+                    <img src="assets/plant2.png" alt="Plant 2">
+                    <p><strong>Plant 2:</strong> Highly resilient against hazards.</p>
+                </div>
+                <div class="description">
+                    <img src="assets/plant3.png" alt="Plant 3">
+                    <p><strong>Plant 3:</strong> Extremely efficient in using resources.</p>
+                </div>
             </div>
-            <div class="description">
-                <img src="assets/plant2.png" alt="Plant 2">
-                <p><strong>Plant 2:</strong> Highly resilient against hazards.</p>
-            </div>
-            <div class="description">
-                <img src="assets/plant3.png" alt="Plant 3">
-                <p><strong>Plant 3:</strong> Extremely efficient in using resources.</p>
+
+            <!-- Stats Section -->
+            <div class="stats">
+                <h3>Real-Time Statistics</h3>
+                <div id="realTimeInfo"></div>
             </div>
         </div>
 
-        <!-- Game Section -->
-        <div class="game-section">
-            <p>Can you predict which plant will flourish the longest? Place your guess below and start the simulation.</p>
-            <label for="guess">Your guess (1, 2, or 3):</label>
-            <input type="number" id="guess" min="1" max="3" placeholder="Enter your guess">
-            <button onclick="startGame()">Start Game</button>
-            <canvas id="gameCanvas"></canvas>
-        </div>
-
-        <!-- Stats Section -->
-        <div class="stats">
-            <h3>Real-Time Statistics</h3>
-            <div id="realTimeInfo"></div>
+        <div class="right-column">
+            <!-- Game Section -->
+            <div class="game-section">
+                <p>Can you predict which plant will flourish the longest? Place your guess below and start the simulation.</p>
+                <label for="guess">Your guess (1, 2, or 3):</label>
+                <input type="number" id="guess" min="1" max="3" placeholder="Enter your guess">
+                <button onclick="startGame()">Start Game</button>
+                <canvas id="gameCanvas"></canvas>
+            </div>
         </div>
     </div>
 
@@ -287,8 +338,14 @@
         function resizeCanvas() {
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
-            canvas.width = Math.min(800, screenWidth * 0.8);
-            canvas.height = Math.min(600, screenHeight * 0.6);
+            // Try giving more space to the canvas on larger screens
+            if (screenWidth > 1024) {
+                canvas.width = Math.min(800, screenWidth * 0.7);
+                canvas.height = Math.min(600, screenHeight * 0.7);
+            } else {
+                canvas.width = Math.min(800, screenWidth * 0.8);
+                canvas.height = Math.min(600, screenHeight * 0.6);
+            }
         }
 
         function initializeGame() {
