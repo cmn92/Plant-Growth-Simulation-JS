@@ -105,6 +105,8 @@
 </head>
 <body>
     <h1>Plant Growth Game</h1>
+    <p>There are three plants each with different strengths competing for resources (sunlight and water).. </p>
+    <p>and avoiding hazards(environmental and pest). </p>
     <div class="container">
         <!-- Sidebar -->
         <div class="sidebar">
@@ -121,17 +123,18 @@
                 <img src="assets/plant3.png" alt="Plant 3">
                 <p><strong>Plant 3:</strong> The most resource-efficient plant.</p>
             </div>
-            <h3>Real-Time Stats</h3>
-            <div id="realTimeInfo"></div>
+            
         </div>
 
         <!-- Game Section -->
         <div class="game-section">
-            <p>There are three plants each with different strengths competing for resources(sunlight and water) and avoiding hazards(environmental and pest). Guess which plant will survive the longest and win!</p>
+            <p>Guess which plant will survive the longest and win!</p>
             <label for="guess">Your guess (1, 2, or 3): </label>
             <input type="number" id="guess" min="1" max="3">
             <button onclick="startGame()">Start Game</button>
             <canvas id="gameCanvas"></canvas>
+            <h3>Real-Time Stats</h3>
+            <div id="realTimeInfo"></div>
         </div>
     </div>
 
