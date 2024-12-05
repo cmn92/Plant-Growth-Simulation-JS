@@ -80,24 +80,6 @@
             outline: none;
             width: 50px;
         }
-
-        #congrats {
-            display: none;
-            color: #28a745;
-            font-weight: bold;
-            font-size: 1.5rem;
-            animation: fadeIn 1.5s infinite alternate;
-            margin-top: 15px;
-        }
-
-        @keyframes fadeIn {
-            0% {
-                opacity: 0.5;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
     </style>
 </head>
 <body>
@@ -108,30 +90,44 @@
     <button onclick="startGame()">Start Game</button>
     <canvas id="gameCanvas"></canvas>
     <div id="realTimeInfo"></div>
-    <div id="congrats">🎉 Congratulations! Your guess was correct! 🎉</div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const infoDiv = document.getElementById('realTimeInfo');
-        const congratsDiv = document.getElementById('congrats');
 
         let userGuess = null;
         let plants = [];
-        let sunlight = { x: 0, y: 0, color: 'yellow' };
-        let water = { x: 0, y: 0, color: 'blue' };
+        let sunlight = { x: 0, y: 0, img: null };
+        let water = { x: 0, y: 0, img: null };
         let hazards = [];
         let gameEnded = false;
 
-        // Set canvas dimensions dynamically based on screen size
+        // Load images
+        const plantImages = [
+            new Image(),
+            new Image(),
+            new Image()
+        ];
+        plantImages[0].src = 'path/to/plant1.png';
+        plantImages[1].src = 'path/to/plant2.png';
+        plantImages[2].src = 'path/to/plant3.png';
+
+        const sunlightImage = new Image();
+        sunlightImage.src = 'path/to/sunlight.png';
+
+        const waterImage = new Image();
+        waterImage.src = 'path/to/water.png';
+
+        const hazardImage = new Image();
+        hazardImage.src = 'path/to/hazard.png';
+
+        // Set canvas dimensions dynamically
         function resizeCanvas() {
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
-            const canvasWidth = Math.min(800, screenWidth * 0.9);
-            const canvasHeight = Math.min(600, screenHeight * 0.6);
-
-            canvas.width = canvasWidth;
-            canvas.height = canvasHeight;
+            canvas.width = Math.min(800, screenWidth * 0.9);
+            canvas.height = Math.min(600, screenHeight * 0.6);
         }
 
         // Initialize game data
@@ -139,12 +135,12 @@
             const canvasWidth = canvas.width;
             const canvasHeight = canvas.height;
 
-            sunlight = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5, color: 'yellow' };
-            water = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5 + canvasHeight * 0.5, color: 'blue' };
+            sunlight = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5, img: sunlightImage };
+            water = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5 + canvasHeight * 0.5, img: waterImage };
             hazards = Array.from({ length: 5 }, () => ({
                 x: Math.random() * canvasWidth,
                 y: Math.random() * canvasHeight,
-                color: 'red',
+                img: hazardImage,
             }));
 
             plants = Array.from({ length: 3 }, (_, i) => ({
@@ -157,7 +153,7 @@
                 resource_efficiency: Math.random() * 0.5 + 0.5,
                 resources_collected: 0,
                 distance_traveled: 0,
-                color: ['green', 'blue', 'orange'][i],
+                img: plantImages[i],
             }));
         }
 
@@ -180,103 +176,40 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw sunlight
-            ctx.fillStyle = sunlight.color;
-            ctx.beginPath();
-            ctx.arc(sunlight.x, sunlight.y, 20, 0, 2 * Math.PI);
-            ctx.fill();
+            ctx.drawImage(sunlight.img, sunlight.x - 20, sunlight.y - 20, 40, 40);
 
             // Draw water
-            ctx.fillStyle = water.color;
-            ctx.beginPath();
-            ctx.arc(water.x, water.y, 20, 0, 2 * Math.PI);
-            ctx.fill();
+            ctx.drawImage(water.img, water.x - 20, water.y - 20, 40, 40);
 
             // Draw hazards
             hazards.forEach(hazard => {
-                ctx.fillStyle = hazard.color;
-                ctx.beginPath();
-                ctx.arc(hazard.x, hazard.y, 10, 0, 2 * Math.PI);
-                ctx.fill();
+                ctx.drawImage(hazard.img, hazard.x - 10, hazard.y - 10, 20, 20);
             });
 
             // Draw plants
             plants.forEach(plant => {
                 if (plant.health > 0) {
-                    ctx.fillStyle = plant.color;
-                    ctx.fillRect(plant.x, plant.y, 10, 10);
+                    ctx.drawImage(plant.img, plant.x - 10, plant.y - 10, 20, 20);
                 }
             });
         }
 
-        // Update game state
-        function updateGame() {
-            let alivePlants = 0;
-            plants.forEach(plant => {
-                if (plant.health <= 0) return;
-
-                // Increment count of alive plants
-                alivePlants++;
-
-                // Move plants toward sunlight or water
-                const dx = sunlight.x - plant.x;
-                const dy = sunlight.y - plant.y;
-                const distance = Math.sqrt(dx ** 2 + dy ** 2);
-                if (distance > 0) {
-                    plant.x += (dx / distance) * plant.growth_rate;
-                    plant.y += (dy / distance) * plant.growth_rate;
-                }
-
-                // Check for resource collection
-                if (distance < 20) {
-                    plant.health += 10 * plant.resource_efficiency;
-                    plant.resources_collected += 1;
-                    sunlight.x = Math.random() * canvas.width;
-                    sunlight.y = Math.random() * canvas.height * 0.5;
-                }
-
-                // Gradual health decrease
-                plant.health -= 0.1;
-
-                // Update distance traveled
-                plant.distance_traveled += plant.growth_rate;
-            });
-
-            // Check if only one plant remains alive
-            if (alivePlants === 1) {
-                gameEnded = true;
-                endGame();
-            }
-        }
-
-        // Update real-time info
-        function updateInfo() {
-            infoDiv.innerHTML = plants
-                .map(plant => `
-                    <div>
-                        <strong>Plant ${plant.id}:</strong>
-                        Health: ${plant.health.toFixed(2)} | 
-                        Resources: ${plant.resources_collected} | 
-                        Distance: ${plant.distance_traveled.toFixed(2)}
-                    </div>
-                `)
-                .join('');
-        }
-
-        // End game and display results
+        // End game
         function endGame() {
-            const bestPlant = plants.sort((a, b) => b.health - a.health)[0];
+            const bestPlant = plants.sort((a, b) => b.resources_collected - a.resources_collected)[0];
             if (bestPlant.id === userGuess) {
-                congratsDiv.style.display = 'block';
+                alert(`🎉 Congratulations! Your guess was correct! Plant ${bestPlant.id} performed the best!`);
+            } else {
+                alert(`Better luck next time! The best-performing plant was Plant ${bestPlant.id}.`);
             }
         }
 
         // Main game loop
         function gameLoop() {
-            if (gameEnded) return;
-            updateGame();
-            drawGame();
-            updateInfo();
-            requestAnimationFrame(gameLoop);
+            if (!gameEnded) {
+                drawGame();
+                requestAnimationFrame(gameLoop);
+            }
         }
     </script>
 </body>
