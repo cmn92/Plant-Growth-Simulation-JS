@@ -7,22 +7,58 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            text-align: center;
             background: linear-gradient(135deg, #f3f4f7, #e6e9f0);
             margin: 0;
             padding: 0;
+            display: flex;
         }
 
-        h1 {
-            font-size: 1.8rem;
+        #gameContainer {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #gameSidebar {
+            flex: 1;
+            padding: 10px;
+            background: #f9f9f9;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        #gameSidebar h2 {
             color: #333;
-            margin: 10px;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
         }
 
-        p {
-            color: #555;
-            font-size: 1rem;
-            margin: 5px;
+        #description,
+        #realTimeInfo {
+            width: 90%;
+            margin-bottom: 20px;
+        }
+
+        #description div,
+        #realTimeInfo div {
+            background: #fff;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #description img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
         }
 
         canvas {
@@ -33,26 +69,6 @@
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             display: block;
             max-width: 95%;
-        }
-
-        #realTimeInfo {
-            margin-top: 10px;
-            text-align: center;
-            font-size: 0.9rem;
-            width: 90%;
-            margin: 0 auto;
-        }
-
-        #realTimeInfo div {
-            margin-bottom: 8px;
-            background: #f9f9f9;
-            border-radius: 5px;
-            padding: 8px;
-            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        #realTimeInfo div strong {
-            color: #333;
         }
 
         button {
@@ -80,41 +96,27 @@
             outline: none;
             width: 50px;
         }
-
-        #description {
-            margin: 20px auto;
-            text-align: center;
-        }
-
-        #description div {
-            margin: 10px;
-            padding: 10px;
-            background: #f0f0f0;
-            border-radius: 8px;
-            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        #description img {
-            width: 40px;
-            height: 40px;
-            vertical-align: middle;
-            margin-right: 10px;
-        }
     </style>
 </head>
 <body>
-    <h1>Plant Growth Game</h1>
-    <p>Guess which plant will survive the longest and win!</p>
-    <label for="guess">Your guess (1, 2, or 3): </label>
-    <input type="number" id="guess" min="1" max="3">
-    <button onclick="startGame()">Start Game</button>
-    <canvas id="gameCanvas"></canvas>
-    <div id="description">
-        <div><img src="assets/plant1.png" alt="Plant 1"> <strong>Plant 1:</strong> The fastest growing plant.</div>
-        <div><img src="assets/plant2.png" alt="Plant 2"> <strong>Plant 2:</strong> The most resilient plant.</div>
-        <div><img src="assets/plant3.png" alt="Plant 3"> <strong>Plant 3:</strong> The most resource-efficient plant.</div>
+    <div id="gameContainer">
+        <h1>Plant Growth Game</h1>
+        <p>Guess which plant will survive the longest and win!</p>
+        <label for="guess">Your guess (1, 2, or 3): </label>
+        <input type="number" id="guess" min="1" max="3">
+        <button onclick="startGame()">Start Game</button>
+        <canvas id="gameCanvas"></canvas>
     </div>
-    <div id="realTimeInfo"></div>
+    <div id="gameSidebar">
+        <h2>Plant Descriptions</h2>
+        <div id="description">
+            <div><img src="assets/plant1.png" alt="Plant 1"> <strong>Plant 1:</strong> The fastest growing plant.</div>
+            <div><img src="assets/plant2.png" alt="Plant 2"> <strong>Plant 2:</strong> The most resilient plant.</div>
+            <div><img src="assets/plant3.png" alt="Plant 3"> <strong>Plant 3:</strong> The most resource-efficient plant.</div>
+        </div>
+        <h2>Real-Time Updates</h2>
+        <div id="realTimeInfo"></div>
+    </div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -151,8 +153,8 @@
         function resizeCanvas() {
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
-            canvas.width = Math.min(800, screenWidth * 0.9);
-            canvas.height = Math.min(600, screenHeight * 0.6);
+            canvas.width = Math.min(800, screenWidth * 0.7);
+            canvas.height = Math.min(600, screenHeight * 0.7);
         }
 
         // Initialize game data
@@ -162,9 +164,11 @@
 
             sunlight = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5, img: sunlightImage };
             water = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5 + canvasHeight * 0.5, img: waterImage };
-            hazards = Array.from({ length: 5 }, () => ({
+            hazards = Array.from({ length: 5 }, (_, i) => ({
                 x: Math.random() * canvasWidth,
                 y: Math.random() * canvasHeight,
+                dx: i % 2 === 0 ? Math.random() * 2 - 1 : 0,
+                dy: i % 2 === 0 ? Math.random() * 2 - 1 : 0,
                 img: hazardImage,
             }));
 
@@ -205,13 +209,11 @@
 
                 alivePlants++;
 
-                // Determine closest target (sunlight or water)
                 const distToSunlight = Math.sqrt((sunlight.x - plant.x) ** 2 + (sunlight.y - plant.y) ** 2);
                 const distToWater = Math.sqrt((water.x - plant.x) ** 2 + (water.y - plant.y) ** 2);
 
                 const target = distToSunlight < distToWater ? sunlight : water;
 
-                // Move plants toward the target
                 const dx = target.x - plant.x;
                 const dy = target.y - plant.y;
                 const distance = Math.sqrt(dx ** 2 + dy ** 2);
@@ -221,10 +223,8 @@
                     plant.y += (dy / distance) * plant.growth_rate;
                 }
 
-                // Gradual health decrease
                 plant.health -= 0.1;
 
-                // Collect sunlight or water
                 if (distToSunlight < 30) {
                     plant.health += 10 * plant.resource_efficiency;
                     plant.resources_collected += 1;
@@ -236,6 +236,21 @@
                     water.x = Math.random() * canvas.width;
                     water.y = Math.random() * canvas.height * 0.5 + canvas.height * 0.5;
                 }
+
+                hazards.forEach(hazard => {
+                    const hazardDist = Math.sqrt((hazard.x - plant.x) ** 2 + (hazard.y - plant.y) ** 2);
+                    if (hazardDist < 30) {
+                        plant.health -= 15 * (1 - plant.hazard_resistance);
+                    }
+                });
+            });
+
+            hazards.forEach(hazard => {
+                hazard.x += hazard.dx;
+                hazard.y += hazard.dy;
+
+                if (hazard.x < 0 || hazard.x > canvas.width) hazard.dx *= -1;
+                if (hazard.y < 0 || hazard.y > canvas.height) hazard.dy *= -1;
             });
 
             if (alivePlants === 1) {
@@ -248,18 +263,13 @@
         function drawGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Draw sunlight
             ctx.drawImage(sunlight.img, sunlight.x - 30, sunlight.y - 30, 60, 60);
-
-            // Draw water
             ctx.drawImage(water.img, water.x - 30, water.y - 30, 60, 60);
 
-            // Draw hazards
             hazards.forEach(hazard => {
                 ctx.drawImage(hazard.img, hazard.x - 20, hazard.y - 20, 40, 40);
             });
 
-            // Draw plants
             plants.forEach(plant => {
                 if (plant.health > 0) {
                     ctx.drawImage(plant.img, plant.x - 15, plant.y - 15, 40, 40);
@@ -309,3 +319,4 @@
     </script>
 </body>
 </html>
+
