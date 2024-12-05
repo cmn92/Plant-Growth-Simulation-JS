@@ -32,29 +32,33 @@
 
         * {
             box-sizing: border-box;
-            margin: 0;
-            padding: 0;
         }
 
         body {
             font-family: 'Roboto', sans-serif;
             background: var(--bg-color);
             color: var(--text-color);
+            margin: 0;
+            padding: 0;
             transition: background 0.3s ease, color 0.3s ease;
-            overflow: hidden; /* Hide scrolling */
+            overflow-x: hidden;
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
+            padding: 15px 20px;
             background: var(--card-bg);
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .header h1 {
-            font-size: 1.5rem;
+            margin: 0;
+            font-size: 1.8rem;
             color: var(--heading-color);
         }
 
@@ -62,7 +66,7 @@
             background: var(--card-bg);
             color: var(--text-color);
             border: 1px solid var(--border-color);
-            padding: 5px 10px;
+            padding: 8px 15px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 0.9rem;
@@ -75,89 +79,84 @@
             color: #fff;
         }
 
-        .wrapper {
-            display: grid;
-            grid-template-rows: auto 1fr;
-            height: 100vh;
-            overflow: hidden;
+        .container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        /* Top row: plants, resources, hazards, stats - all side by side without scrolling */
-        .top-row {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            padding: 10px;
-            background: var(--bg-color);
+        .left-column, .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        .card {
+        .sidebar, .game-section, .stats {
             background: var(--card-bg);
+            color: var(--text-color);
             border-radius: 8px;
-            padding: 10px;
+            padding: 20px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
         }
 
-        .card h3 {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
+        h3 {
+            margin-top: 0;
+            font-size: 1.4rem;
             color: var(--heading-color);
         }
 
-        .card p {
-            font-size: 0.9rem;
-            line-height: 1.3;
+        .sidebar p, .sidebar ul {
+            font-size: 1rem;
+            line-height: 1.5;
         }
 
         .description {
             display: flex;
             align-items: center;
-            margin: 10px 0;
+            margin: 15px 0;
         }
 
         .description img {
-            width: 30px;
-            height: 30px;
-            margin-right: 8px;
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 5px;
         }
 
-        /* Bottom row: game section spans all columns */
-        .bottom-row {
-            grid-column: 1 / 5;
-            padding: 10px;
-            background: var(--bg-color);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
+        .description p {
+            margin: 0;
+            font-size: 1rem;
         }
 
         .game-section p {
             font-size: 1rem;
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .guess-container {
+            text-align: center;
         }
 
         .guess-container p {
             margin-bottom: 10px;
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
 
         .guess-buttons {
             display: flex;
-            gap: 10px;
             justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
-            margin-bottom: 10px;
         }
 
         .guess-buttons button {
-            padding: 5px 10px;
+            padding: 8px 15px;
             border: 1px solid var(--border-color);
             border-radius: 5px;
-            font-size: 0.9rem;
+            font-size: 1rem;
             cursor: pointer;
             color: #fff;
             transition: background 0.3s ease;
@@ -180,57 +179,89 @@
         }
 
         canvas {
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--card-bg), var(--bg-color));
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 600px;
-            height: 300px;
-            margin-top: 10px;
+            height: auto;
+            object-fit: contain;
+            margin-top: 20px;
+            max-width: 100%;
+            max-height: 400px; /* Limit the height to prevent excessive vertical scrolling */
+        }
+
+        .stats {
+            font-size: 1rem;
+            line-height: 1.5;
         }
 
         #realTimeInfo div {
-            margin-bottom: 5px;
-            font-size: 0.9rem;
+            margin-bottom: 10px;
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 1200px) {
-            .card p {
-                font-size: 0.85rem;
+        /* Large screens layout */
+        @media (min-width: 1025px) {
+            .container {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: space-between;
             }
-            .description img {
-                width: 25px;
-                height: 25px;
+
+            .left-column {
+                flex: 0 0 350px;
+                max-width: 350px;
+            }
+
+            .right-column {
+                flex: 1;
             }
         }
 
+        /* Medium screens */
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .sidebar, .game-section, .stats {
+                width: 100%;
+                max-width: 500px;
+            }
+        }
+
+        /* Small screens (phones) */
         @media (max-width: 768px) {
-            .top-row {
-                grid-template-columns: 1fr 1fr;
-                grid-template-rows: auto auto;
-                overflow: auto;
+            .container {
+                flex-direction: column;
+                align-items: center;
+                padding: 10px;
             }
 
-            .bottom-row {
-                padding: 5px;
+            .sidebar, .game-section, .stats {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .stats, .sidebar, .game-section {
+                padding: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .toggle-theme, .guess-buttons button {
+                font-size: 0.9rem;
+                padding: 8px 12px;
             }
 
             canvas {
-                height: 200px;
-            }
-
-            .game-section p,
-            .guess-container p,
-            #realTimeInfo div {
-                font-size: 0.8rem;
-            }
-
-            .guess-buttons button {
-                font-size: 0.8rem;
-                padding: 3px 8px;
+                max-height: 250px; /* Smaller max height for mobile */
             }
         }
+
     </style>
 </head>
 <body>
@@ -239,60 +270,61 @@
         <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark/Light Mode</button>
     </div>
 
-    <div class="wrapper">
-        <!-- Top row: About Plants, About Resources, About Hazards, and Real-Time Stats side by side -->
-        <div class="top-row">
-            <div class="card">
+    <div class="container">
+        <div class="left-column">
+            <!-- Sidebar -->
+            <div class="sidebar">
                 <h3>About the Plants</h3>
-                <p>Three unique plants race for survival, collecting sunlight and water, while avoiding hazards.</p>
+                <p>In this simulation, three unique plants each have special strengths. They race to gather sunlight and water, while dodging hazards. Cheer on your choice as they struggle for survival!</p>
                 <div class="description">
                     <img src="assets/plant1.png" alt="Plant 1">
-                    <p><strong>Plant 1:</strong> Fast growth, average resilience & efficiency.</p>
+                    <p><strong>Plant 1:</strong> Extremely fast growth, but average resilience and efficiency.</p>
                 </div>
                 <div class="description">
                     <img src="assets/plant2.png" alt="Plant 2">
-                    <p><strong>Plant 2:</strong> Very resilient, slower growth.</p>
+                    <p><strong>Plant 2:</strong> Tough and resilient, hazards barely faze it, though it's slower.</p>
                 </div>
                 <div class="description">
                     <img src="assets/plant3.png" alt="Plant 3">
-                    <p><strong>Plant 3:</strong> Efficient in using resources.</p>
+                    <p><strong>Plant 3:</strong> Highly efficient at using resources, thrives with less input.</p>
                 </div>
-            </div>
 
-            <div class="card">
                 <h3>About Resources</h3>
+                <p>The plants compete for two essential resources:</p>
                 <div class="description">
                     <img src="assets/sunlight.png" alt="Sunlight">
-                    <p><strong>Sunlight:</strong> Boosts health greatly (found up high).</p>
+                    <p><strong>Sunlight:</strong> Abundant in upper regions. Greatly boosts plant health.</p>
                 </div>
                 <div class="description">
                     <img src="assets/water.png" alt="Water">
-                    <p><strong>Water:</strong> Steady health gains (found lower down).</p>
+                    <p><strong>Water:</strong> Located lower down. Provides moderate but steady health gains.</p>
                 </div>
-            </div>
+                <p>Collecting these resources replenishes health and allows plants to survive longer.</p>
 
-            <div class="card">
                 <h3>About Hazards</h3>
+                <p>Not everything is easy for the plants. Various threats lurk in the field:</p>
                 <div class="description">
                     <img src="assets/hazard.png" alt="Biotic Stress">
-                    <p><strong>Biotic Stress:</strong> Moving threats damaging nearby plants.</p>
+                    <p><strong>Biotic Stress (Moving Hazard):</strong> Drifts around the field, harming plants that get too close.</p>
                 </div>
                 <div class="description">
                     <img src="assets/hazard2.png" alt="Environmental Stress">
-                    <p><strong>Environmental Stress:</strong> Static but harmful when approached.</p>
+                    <p><strong>Environmental Stress (Static Hazard):</strong> Stationary but dangerous. Getting near it drains plant health.</p>
                 </div>
+                <p>Some plants are more resilient and lose less health when encountering these threats. Choose wisely!</p>
             </div>
 
-            <div class="card">
+            <!-- Stats Section -->
+            <div class="stats">
                 <h3>Real-Time Statistics</h3>
                 <div id="realTimeInfo"></div>
             </div>
         </div>
 
-        <!-- Bottom row: Game Section -->
-        <div class="bottom-row">
+        <div class="right-column">
+            <!-- Game Section -->
             <div class="game-section">
-                <p>Pick a plant to support and see which one prevails!</p>
+                <p>Pick a plant to back and watch the race unfold!</p>
                 <div class="guess-container">
                     <p>Select a Plant:</p>
                     <div class="guess-buttons">
@@ -332,7 +364,12 @@
         const ctx = canvas.getContext('2d');
         const infoDiv = document.getElementById('realTimeInfo');
 
-        const plantImages = [new Image(), new Image(), new Image()];
+        // Load images
+        const plantImages = [
+            new Image(),
+            new Image(),
+            new Image()
+        ];
         plantImages[0].src = 'assets/plant1.png';
         plantImages[1].src = 'assets/plant2.png';
         plantImages[2].src = 'assets/plant3.png';
@@ -354,11 +391,11 @@
             const screenHeight = window.innerHeight;
             // Keep a reasonable size
             if (screenWidth > 1024) {
-                canvas.width = Math.min(600, screenWidth * 0.4);
-                canvas.height = Math.min(300, screenHeight * 0.3);
+                canvas.width = Math.min(800, screenWidth * 0.7);
+                canvas.height = Math.min(600, screenHeight * 0.6);
             } else {
-                canvas.width = Math.min(500, screenWidth * 0.8);
-                canvas.height = Math.min(300, screenHeight * 0.3);
+                canvas.width = Math.min(600, screenWidth * 0.9);
+                canvas.height = Math.min(400, screenHeight * 0.4);
             }
         }
 
@@ -373,8 +410,9 @@
 
             // Randomize resource locations
             sunlight = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5, img: sunlightImage };
-            water = { x: Math.random() * canvasWidth, y: (Math.random() * canvasHeight * 0.5) + (canvasHeight * 0.5), img: waterImage };
+            water = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5 + (canvasHeight * 0.5), img: waterImage };
             
+            // Hazards (Biotic and Environmental Stress)
             hazards = Array.from({ length: 3 }, () => ({
                 x: Math.random() * canvasWidth,
                 y: Math.random() * canvasHeight,
@@ -391,6 +429,7 @@
                 }))
             );
 
+            // Set distinct characteristics
             plants = [
                 {
                     id: 1,
@@ -445,21 +484,26 @@
                 if (plant.health <= 0) return;
 
                 alivePlants++;
+
                 const distToSunlight = Math.sqrt((sunlight.x - plant.x)**2 + (sunlight.y - plant.y)**2);
                 const distToWater = Math.sqrt((water.x - plant.x)**2 + (water.y - plant.y)**2);
+
                 const target = distToSunlight < distToWater ? sunlight : water;
 
                 const dx = target.x - plant.x;
                 const dy = target.y - plant.y;
                 const distance = Math.sqrt(dx**2 + dy**2);
 
+                // Move plant
                 if (distance > 0) {
                     plant.x += (dx / distance) * plant.growth_rate;
                     plant.y += (dy / distance) * plant.growth_rate;
                 }
 
+                // Natural health decay
                 plant.health -= 0.2;
 
+                // Collect resources
                 if (distToSunlight < 30) {
                     plant.health += 10 * plant.resource_efficiency;
                     plant.resources_collected += 1;
@@ -472,6 +516,7 @@
                     water.y = Math.random() * canvas.height * 0.5 + (canvas.height * 0.5);
                 }
 
+                // Hazards damage
                 hazards.forEach(hazard => {
                     const hazardDist = Math.sqrt((hazard.x - plant.x)**2 + (hazard.y - plant.y)**2);
                     if (hazardDist < 30) {
@@ -480,19 +525,28 @@
                 });
             });
 
+            // Move hazards
             hazards.forEach(hazard => {
                 hazard.x += hazard.dx;
                 hazard.y += hazard.dy;
+
                 if (hazard.x < 0 || hazard.x > canvas.width) hazard.dx *= -1;
                 if (hazard.y < 0 || hazard.y > canvas.height) hazard.dy *= -1;
             });
 
-            if (alivePlants === 1 && !gameEnded) {
-                gameEnded = true;
-                endGame();
-            } else if (alivePlants === 0 && !gameEnded) {
-                gameEnded = true;
-                endGame(true);
+            // Check end conditions
+            if (alivePlants === 1) {
+                // Exactly one plant alive
+                if (!gameEnded) {
+                    gameEnded = true;
+                    endGame();
+                }
+            } else if (alivePlants === 0) {
+                // All died simultaneously
+                if (!gameEnded) {
+                    gameEnded = true;
+                    endGame(true);
+                }
             }
         }
 
@@ -526,19 +580,23 @@
         }
 
         function endGame(allDead = false) {
+            // Determine best plant by resources collected
             const bestPlant = plants.sort((a, b) => b.resources_collected - a.resources_collected)[0];
+
             setTimeout(() => {
                 if (!allDead) {
+                    // One plant survived
                     if (bestPlant.id === userGuess) {
-                        alert(`🎉 Your chosen plant (Plant ${bestPlant.id}) outlasted the others!`);
+                        alert(`🎉 Congratulations! Your chosen plant (Plant ${bestPlant.id}) outlasted the others and thrived the most!`);
                     } else {
                         alert(`Better luck next time! Plant ${bestPlant.id} was the ultimate survivor.`);
                     }
                 } else {
+                    // All plants died
                     if (bestPlant.id === userGuess) {
-                        alert(`All plants died! Your chosen Plant ${bestPlant.id} collected the most resources before dying!`);
+                        alert(`All plants perished! But Plant ${bestPlant.id}, your chosen one, collected the most resources before dying. Great guess!`);
                     } else {
-                        alert(`All plants died, Plant ${bestPlant.id} collected the most resources. Try again!`);
+                        alert(`All plants died, but Plant ${bestPlant.id} managed to collect the most resources. Better luck next time!`);
                     }
                 }
                 resetGame();
