@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plant Growth Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #f3f4f7;
+            --bg-color: #f8fafd;
             --text-color: #333;
             --card-bg: #ffffff;
-            --border-color: #888;
+            --border-color: #ccc;
+            --accent-color: #4CAF50;
+            --heading-color: #222;
         }
 
         .dark-mode {
@@ -17,20 +20,51 @@
             --text-color: #e0e0e0;
             --card-bg: #1e1e1e;
             --border-color: #555;
+            --heading-color: #e0e0e0;
         }
 
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Roboto', sans-serif;
             background: var(--bg-color);
             color: var(--text-color);
             margin: 0;
             padding: 0;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
-        h1 {
-            font-size: 2rem;
-            text-align: center;
-            margin: 20px 0;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--card-bg);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--heading-color);
+        }
+
+        .toggle-theme {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .toggle-theme:hover {
+            background: var(--accent-color);
+            color: #fff;
         }
 
         .container {
@@ -38,25 +72,90 @@
             flex-wrap: wrap;
             justify-content: center;
             gap: 20px;
-            padding: 10px;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
         .sidebar, .game-section, .stats {
             background: var(--card-bg);
             color: var(--text-color);
             border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
             flex: 1;
             min-width: 300px;
             max-width: 400px;
+        }
+
+        h3 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            color: var(--heading-color);
+        }
+
+        .sidebar p {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .description {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .description img {
+            width: 50px;
+            height: 50px;
+            margin-right: 15px;
+            border-radius: 5px;
+        }
+
+        .description p {
+            margin: 0;
+            font-size: 1rem;
         }
 
         .game-section {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+        }
+
+        .game-section p {
+            font-size: 1rem;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        label {
+            font-size: 1rem;
+        }
+
+        input[type="number"] {
+            padding: 8px 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            margin: 10px 0;
+            width: 100%;
+            max-width: 150px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid var(--accent-color);
+            background: var(--accent-color);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #43a047;
         }
 
         canvas {
@@ -68,41 +167,16 @@
             max-width: 400px;
             height: 300px;
             object-fit: contain;
+            margin-top: 20px;
         }
 
-        .description {
-            display: flex;
-            align-items: center;
+        .stats {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        #realTimeInfo div {
             margin-bottom: 10px;
-        }
-
-        .description img {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-            border-radius: 5px;
-        }
-
-        input[type="number"], button {
-            padding: 10px 15px;
-            font-size: 1rem;
-            border-radius: 5px;
-            border: 1px solid var(--border-color);
-            margin: 10px 0;
-        }
-
-        .toggle-theme {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: var(--card-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         @media (max-width: 768px) {
@@ -122,32 +196,34 @@
     </style>
 </head>
 <body>
-    <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark/Light Mode</button>
-    <h1>Plant Growth Game</h1>
+    <div class="header">
+        <h1>Plant Growth Game</h1>
+        <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark/Light Mode</button>
+    </div>
+
     <div class="container">
         <!-- Sidebar -->
         <div class="sidebar">
-            <h3>Plants Description</h3>
-            <p>There are three plants, each with different strengths, competing for resources (sunlight and water).</p>
-            <p>And avoiding hazards (environmental and pest).</p>
+            <h3>About the Plants</h3>
+            <p>In this simulation, three unique plants each have special strengths. They compete to collect sunlight and water, while also overcoming various hazards that threaten their survival. Which one will endure?</p>
             <div class="description">
                 <img src="assets/plant1.png" alt="Plant 1">
-                <p><strong>Plant 1:</strong> The fastest growing plant.</p>
+                <p><strong>Plant 1:</strong> Grows at a rapid pace.</p>
             </div>
             <div class="description">
                 <img src="assets/plant2.png" alt="Plant 2">
-                <p><strong>Plant 2:</strong> The most resilient plant.</p>
+                <p><strong>Plant 2:</strong> Highly resilient against hazards.</p>
             </div>
             <div class="description">
                 <img src="assets/plant3.png" alt="Plant 3">
-                <p><strong>Plant 3:</strong> The most resource-efficient plant.</p>
+                <p><strong>Plant 3:</strong> Extremely efficient in using resources.</p>
             </div>
         </div>
 
         <!-- Game Section -->
         <div class="game-section">
-            <p>Guess which plant will survive the longest and win!</p>
-            <label for="guess">Your guess (1, 2, or 3): </label>
+            <p>Can you predict which plant will flourish the longest? Place your guess below and start the simulation.</p>
+            <label for="guess">Your guess (1, 2, or 3):</label>
             <input type="number" id="guess" min="1" max="3" placeholder="Enter your guess">
             <button onclick="startGame()">Start Game</button>
             <canvas id="gameCanvas"></canvas>
@@ -155,10 +231,11 @@
 
         <!-- Stats Section -->
         <div class="stats">
-            <h3>Real-Time Stats</h3>
+            <h3>Real-Time Statistics</h3>
             <div id="realTimeInfo"></div>
         </div>
     </div>
+
     <script>
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
@@ -207,7 +284,6 @@
         const staticHazardImage = new Image();
         staticHazardImage.src = 'assets/hazard2.png';
 
-        // Set canvas dimensions dynamically
         function resizeCanvas() {
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
@@ -215,7 +291,6 @@
             canvas.height = Math.min(600, screenHeight * 0.6);
         }
 
-        // Initialize game data
         function initializeGame() {
             const canvasWidth = canvas.width;
             const canvasHeight = canvas.height;
@@ -248,12 +323,10 @@
                 hazard_resistance: Math.random() * 0.5 + 0.5,
                 resource_efficiency: Math.random() * 0.5 + 0.5,
                 resources_collected: 0,
-                distance_traveled: 0,
                 img: plantImages[i],
             }));
         }
 
-        // Start the game
         function startGame() {
             userGuess = parseInt(document.getElementById('guess').value);
             if (![1, 2, 3].includes(userGuess)) {
@@ -261,13 +334,12 @@
                 return;
             }
             document.getElementById('guess').disabled = true;
-            document.querySelector('button').disabled = true;
+            document.querySelector('button[onclick="startGame()"]').disabled = true;
             resizeCanvas();
             initializeGame();
             gameLoop();
         }
 
-        // Update game state
         function updateGame() {
             let alivePlants = 0;
 
@@ -326,7 +398,6 @@
             }
         }
 
-        // Draw game elements
         function drawGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -339,43 +410,41 @@
 
             plants.forEach(plant => {
                 if (plant.health > 0) {
-                    ctx.drawImage(plant.img, plant.x - 15, plant.y - 15, 40, 40);
+                    ctx.drawImage(plant.img, plant.x - 20, plant.y - 20, 40, 40);
                 }
             });
 
             updateRealTimeInfo();
         }
 
-        // Update real-time information
         function updateRealTimeInfo() {
             infoDiv.innerHTML = '';
             plants.forEach(plant => {
-                const status = plant.health > 0 ? Health: ${plant.health.toFixed(1)}, Resources: ${plant.resources_collected} : 'Dead';
-                infoDiv.innerHTML += <div><strong>Plant ${plant.id}:</strong> ${status}</div>;
+                const status = plant.health > 0 
+                    ? `Health: ${plant.health.toFixed(1)}, Resources: ${plant.resources_collected}`
+                    : 'Dead';
+                infoDiv.innerHTML += `<div><strong>Plant ${plant.id}:</strong> ${status}</div>`;
             });
         }
 
-        // End game
         function endGame() {
             const bestPlant = plants.sort((a, b) => b.resources_collected - a.resources_collected)[0];
             setTimeout(() => {
                 if (bestPlant.id === userGuess) {
-                    alert(🎉 Congratulations! Your guess was correct! Plant ${bestPlant.id} performed the best!);
+                    alert(`🎉 Congratulations! You guessed correctly! Plant ${bestPlant.id} thrived the most.`);
                 } else {
-                    alert(Better luck next time! The best-performing plant was Plant ${bestPlant.id}.);
+                    alert(`Better luck next time! Plant ${bestPlant.id} was the top performer.`);
                 }
                 resetGame();
             }, 200);
         }
 
-        // Reset game
         function resetGame() {
             gameEnded = false;
             document.getElementById('guess').disabled = false;
-            document.querySelector('button').disabled = false;
+            document.querySelector('button[onclick="startGame()"]').disabled = false;
         }
 
-        // Main game loop
         function gameLoop() {
             if (!gameEnded) {
                 updateGame();
