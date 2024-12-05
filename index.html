@@ -5,16 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plant Growth Game</title>
     <style>
+        :root {
+            --bg-color: #f3f4f7;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        /* Dark Mode Variables */
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+        }
+
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #f3f4f7, #e6e9f0);
+            background: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 0;
         }
 
         h1 {
             font-size: 1.8rem;
-            color: #333;
             text-align: center;
             margin: 10px;
         }
@@ -27,33 +42,13 @@
             padding: 10px;
         }
 
-        .game-section {
-            flex: 2;
-            min-width: 300px;
-        }
-
-        .sidebar {
-            flex: 1;
-            min-width: 300px;
-            background: #ffffff;
+        .sidebar, .stats, .game-section {
+            background: var(--card-bg);
+            color: var(--text-color);
             border-radius: 8px;
             padding: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .stats {
-            flex: 1;
+            box-shadow: 0px 4px 10px var(--shadow-color);
             min-width: 300px;
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .description {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
         }
 
         .description img {
@@ -64,103 +59,62 @@
         }
 
         canvas {
-            border: 2px solid #888;
+            border: 2px solid var(--text-color);
             border-radius: 10px;
-            background: linear-gradient(135deg, #ffffff, #d9e2f1);
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             width: 100%;
         }
 
-        #realTimeInfo div {
-            margin-bottom: 8px;
-            background: #f9f9f9;
-            border-radius: 5px;
-            padding: 8px;
-            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        #realTimeInfo div strong {
-            color: #333;
-        }
-
-        input[type="number"], button {
+        .toggle-theme {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--text-color);
             padding: 8px 15px;
-            font-size: 1rem;
             border-radius: 5px;
-            border: 1px solid #ddd;
-            width: auto;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                order: 2;
-                width: 90%;
-                margin: 0 auto;
-            }
-
-            .game-section {
-                order: 3;
-                width: 90%;
-                margin: 0 auto;
-            }
-
-            h1 {
-                order: 0;
-            }
-
-            .stats {
-                order: 4; /* Ensures it appears last */
-            }
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0px 2px 6px var(--shadow-color);
         }
     </style>
 </head>
 <body>
+    <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark/Light Mode</button>
     <h1>Plant Growth Game</h1>
-    
     <div class="container">
-        <!-- Sidebar -->
         <div class="sidebar">
             <h3>Plants Description</h3>
-            <p>There are three plants each with different strengths competing for resources (sunlight and water). </p>
-            <p>And avoiding hazards(environmental and pest). </p>
+            <p>There are three plants each with different strengths competing for resources (sunlight and water).</p>
             <div class="description">
                 <img src="assets/plant1.png" alt="Plant 1">
                 <p><strong>Plant 1:</strong> The fastest growing plant.</p>
             </div>
-            <div class="description">
-                <img src="assets/plant2.png" alt="Plant 2">
-                <p><strong>Plant 2:</strong> The most resilient plant.</p>
-            </div>
-            <div class="description">
-                <img src="assets/plant3.png" alt="Plant 3">
-                <p><strong>Plant 3:</strong> The most resource-efficient plant.</p>
-            </div>
-            
-            
         </div>
-
-        <!-- Game Section -->
         <div class="game-section">
             <p>Guess which plant will survive the longest and win!</p>
-            <label for="guess">Your guess (1, 2, or 3): </label>
-            <input type="number" id="guess" min="1" max="3">
-            <button onclick="startGame()">Start Game</button>
             <canvas id="gameCanvas"></canvas>
-            
         </div>
-
-        <!-- Stats Section -->
         <div class="stats">
             <h3>Real-Time Stats</h3>
             <div id="realTimeInfo"></div>
         </div>
     </div>
-
     <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+        }
+
+        // Apply theme based on saved preference
+        window.onload = () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+        };
+        
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const infoDiv = document.getElementById('realTimeInfo');
