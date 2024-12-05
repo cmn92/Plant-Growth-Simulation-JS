@@ -94,46 +94,38 @@
             gap: 20px;
         }
 
-        .left-column, .right-column {
+        /* Flex layout for game and stats */
+        .main-content {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        .sidebar {
+        @media (min-width: 1025px) {
+            .main-content {
+                flex-direction: row;
+            }
+        }
+
+        .game-section, .stats-section {
             background: var(--card-bg);
             color: var(--text-color);
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
-            max-height: 80vh;
-            overflow-y: auto;
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        /* Dark mode styles for sidebar */
-        .dark-mode .sidebar {
-            background: var(--card-bg);
-            color: var(--text-color);
-        }
-
+        /* Set flex properties for sections */
         .game-section {
-            background: var(--card-bg);
-            color: var(--text-color);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
-            transition: background 0.3s ease, color 0.3s ease;
+            flex: 2;
+            display: flex;
+            flex-direction: column;
         }
 
-        .stats {
-            background: var(--card-bg);
-            color: var(--text-color);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
-            transition: background 0.3s ease, color 0.3s ease;
-            max-height: 80vh;
+        .stats-section {
+            flex: 1;
+            max-height: 500px; /* Adjust as needed */
             overflow-y: auto;
         }
 
@@ -141,6 +133,31 @@
             margin-top: 0;
             font-size: 1.4rem;
             color: var(--heading-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Icons for headings */
+        .stats-section h3::before {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .stats-section h3.resources::before {
+            background-image: url('assets/sunlight.png');
+        }
+
+        .stats-section h3.health::before {
+            background-image: url('assets/health-icon.png'); /* Replace with actual icon */
+        }
+
+        .stats-section h3.time::before {
+            background-image: url('assets/time-icon.png'); /* Replace with actual icon */
         }
 
         .description {
@@ -166,6 +183,7 @@
             max-width: 100%;
             max-height: 400px;
             margin-top: 30px; /* Increased spacing above canvas */
+            flex-grow: 1;
         }
 
         /* Plant Selection Buttons */
@@ -229,81 +247,92 @@
             100% { background-color: transparent; }
         }
 
-        /* Large screens layout */
-        @media (min-width: 1025px) {
-            .container {
-                flex-direction: row;
-                align-items: flex-start;
-                justify-content: space-between;
-            }
-
-            .left-column {
-                flex: 0 0 350px;
-                max-width: 350px;
-            }
-
-            .right-column {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .stats {
-                margin-top: 20px;
-            }
+        /* Stats Styling */
+        .stat {
+            margin-bottom: 15px;
         }
 
-        /* Medium screens */
-        @media (max-width: 1024px) {
-            .container {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .sidebar, .game-section, .stats {
-                width: 100%;
-                max-width: 500px;
-            }
+        .stat:last-child {
+            margin-bottom: 0;
         }
 
-        /* Small screens (phones) */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                align-items: center;
-                padding: 10px;
-            }
-
-            .sidebar, .game-section, .stats {
-                width: 100%;
-                max-width: 100%;
-            }
+        .stat-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        /* Scrollbar Styling for Sidebar and Stats in Dark Mode */
-        .sidebar::-webkit-scrollbar, .stats::-webkit-scrollbar {
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background-color: green;
+            transition: width 0.5s ease, background-color 0.5s ease;
+        }
+
+        /* Health Status Colors */
+        .healthy {
+            background-color: #4CAF50; /* Green */
+        }
+
+        .moderate {
+            background-color: #FFC107; /* Amber */
+        }
+
+        .critical {
+            background-color: #F44336; /* Red */
+        }
+
+        /* Resource Counters */
+        .resource-counter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        .resource-counter img {
+            width: 25px;
+            height: 25px;
+        }
+
+        /* Time Display */
+        .time-display {
+            font-size: 1.2rem;
+            font-weight: 500;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Scrollbar Styling for Stats in Dark Mode */
+        .stats-section::-webkit-scrollbar {
             width: 8px;
         }
 
-        .sidebar::-webkit-scrollbar-track, .stats::-webkit-scrollbar-track {
+        .stats-section::-webkit-scrollbar-track {
             background: var(--card-bg);
         }
 
-        .sidebar::-webkit-scrollbar-thumb, .stats::-webkit-scrollbar-thumb {
+        .stats-section::-webkit-scrollbar-thumb {
             background-color: var(--border-color);
             border-radius: 4px;
         }
 
-        /* Scrollbar Styling for Sidebar and Stats in Light Mode */
-        body:not(.dark-mode) .sidebar::-webkit-scrollbar, body:not(.dark-mode) .stats::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        body:not(.dark-mode) .sidebar::-webkit-scrollbar-track, body:not(.dark-mode) .stats::-webkit-scrollbar-track {
+        /* Scrollbar Styling for Stats in Light Mode */
+        body:not(.dark-mode) .stats-section::-webkit-scrollbar-track {
             background: var(--card-bg);
         }
 
-        body:not(.dark-mode) .sidebar::-webkit-scrollbar-thumb, body:not(.dark-mode) .stats::-webkit-scrollbar-thumb {
+        body:not(.dark-mode) .stats-section::-webkit-scrollbar-thumb {
             background-color: var(--border-color);
             border-radius: 4px;
         }
@@ -319,51 +348,7 @@
     </div>
 
     <div class="container">
-        <div class="left-column">
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <h3>About the Plants</h3>
-                <p>In this simulation, three unique plants each have special strengths. They race to gather sunlight and water, while dodging hazards. Cheer on your choice as they strive for survival!</p>
-                <div class="description">
-                    <img src="assets/plant1.png" alt="Plant 1">
-                    <p><strong>Plant 1:</strong> Extremely fast growth, but average resilience and efficiency.</p>
-                </div>
-                <div class="description">
-                    <img src="assets/plant2.png" alt="Plant 2">
-                    <p><strong>Plant 2:</strong> Tough and resilient, hazards barely faze it, though it's slower.</p>
-                </div>
-                <div class="description">
-                    <img src="assets/plant3.png" alt="Plant 3">
-                    <p><strong>Plant 3:</strong> Highly efficient at using resources, thrives with less input.</p>
-                </div>
-
-                <h3>About Resources</h3>
-                <p>The plants compete for two essential resources:</p>
-                <div class="description">
-                    <img src="assets/sunlight.png" alt="Sunlight">
-                    <p><strong>Sunlight:</strong> Abundant in upper regions. Greatly boosts plant health.</p>
-                </div>
-                <div class="description">
-                    <img src="assets/water.png" alt="Water">
-                    <p><strong>Water:</strong> Located lower down. Provides moderate but steady health gains.</p>
-                </div>
-                <p>Collecting these resources replenishes health and allows plants to survive longer.</p>
-
-                <h3>About Hazards</h3>
-                <p>Not everything is easy for the plants. Various threats lurk in the field:</p>
-                <div class="description">
-                    <img src="assets/hazard.png" alt="Biotic Stress">
-                    <p><strong>Biotic Stress (Moving Hazard):</strong> Drifts around the field, harming plants that get too close.</p>
-                </div>
-                <div class="description">
-                    <img src="assets/hazard2.png" alt="Environmental Stress">
-                    <p><strong>Environmental Stress (Static Hazard):</strong> Stationary but dangerous. Getting near it drains plant health.</p>
-                </div>
-                <p>Some plants are more resilient and lose less health when encountering these threats. Choose wisely!</p>
-            </div>
-        </div>
-
-        <div class="right-column">
+        <div class="main-content">
             <!-- Game Section -->
             <div class="game-section">
                 <p>Pick a plant to back and watch the race unfold!</p>
@@ -379,9 +364,11 @@
             </div>
 
             <!-- Stats Section -->
-            <div class="stats">
+            <div class="stats-section">
                 <h3>Real-Time Statistics</h3>
-                <div id="realTimeInfo"></div>
+                <div id="realTimeInfo">
+                    <!-- Dynamic content will be injected here -->
+                </div>
             </div>
         </div>
     </div>
@@ -574,16 +561,6 @@
             ];
         }
 
-        function startGame() {
-            if (![1, 2, 3].includes(userGuess)) {
-                alert('Please select a valid plant.');
-                return;
-            }
-            resizeCanvas();
-            // initializeGame(); // Moved to imageLoaded
-            // gameLoop(); // Moved to imageLoaded
-        }
-
         function updateGame() {
             let alivePlants = 0;
 
@@ -705,15 +682,43 @@
 
         function updateRealTimeInfo() {
             infoDiv.innerHTML = '';
+
             plants.forEach(plant => {
                 const status = plant.health > 0 
                     ? `Health: ${plant.health.toFixed(1)}, Resources: ${plant.resources_collected}`
                     : 'Dead';
-                infoDiv.innerHTML += `<div><strong>Plant ${plant.id}:</strong> ${status}</div>`;
+                const healthPercentage = Math.max(0, Math.min(100, plant.health));
+                let healthClass = 'healthy';
+                if (healthPercentage < 50 && healthPercentage >= 20) {
+                    healthClass = 'moderate';
+                } else if (healthPercentage < 20) {
+                    healthClass = 'critical';
+                }
+
+                // Create health stat
+                infoDiv.innerHTML += `
+                    <div class="stat">
+                        <div class="stat-title">
+                            Plant ${plant.id}
+                            ${plant.id === userGuess ? '<span style="font-size: 0.8rem; color: var(--accent-color);">Your Choice</span>' : ''}
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${healthClass}" style="width: ${healthPercentage}%;"></div>
+                        </div>
+                        <div class="resource-counter">
+                            <img src="assets/resource-icon.png" alt="Resources"> <!-- Replace with actual icon -->
+                            <span>${plant.resources_collected} Resources</span>
+                        </div>
+                    </div>
+                `;
             });
 
             // Display remaining time
-            infoDiv.innerHTML += `<div><strong>Time Left:</strong> ${gameDuration} seconds</div>`;
+            infoDiv.innerHTML += `
+                <div class="time-display">
+                    ⏱️ Time Left: ${gameDuration} seconds
+                </div>
+            `;
         }
 
         function endGame(allDead = false, timeUp = false) {
@@ -787,7 +792,7 @@
         // Function to trigger flashing feedback
         function triggerFlash(plant, color) {
             plant.isFlashing = true;
-            plant.flashColor = color === 'green' ? 'rgba(76, 175, 80, 0.5)' : 'rgba(244, 67, 54, 0.5)'; // Green or Red
+            plant.flashColor = color === 'green' ? 'var(--flash-green)' : 'var(--flash-red)';
             setTimeout(() => {
                 plant.isFlashing = false;
                 plant.flashColor = '';
