@@ -106,7 +106,7 @@
             color: var(--heading-color);
         }
 
-        .sidebar p {
+        .sidebar p, .sidebar ul {
             font-size: 1rem;
             line-height: 1.5;
         }
@@ -288,6 +288,30 @@
                     <img src="assets/plant3.png" alt="Plant 3">
                     <p><strong>Plant 3:</strong> Highly efficient at using resources, thrives with less input.</p>
                 </div>
+
+                <h3>About Resources</h3>
+                <p>The plants compete for two essential resources:</p>
+                <div class="description">
+                    <img src="assets/sunlight.png" alt="Sunlight">
+                    <p><strong>Sunlight:</strong> Abundant in upper regions. Greatly boosts plant health.</p>
+                </div>
+                <div class="description">
+                    <img src="assets/water.png" alt="Water">
+                    <p><strong>Water:</strong> Located lower down. Provides moderate but steady health gains.</p>
+                </div>
+                <p>Collecting these resources replenishes health and allows plants to survive longer.</p>
+
+                <h3>About Hazards</h3>
+                <p>Not everything is easy for the plants. Various threats lurk in the field:</p>
+                <div class="description">
+                    <img src="assets/hazard.png" alt="Biotic Stress">
+                    <p><strong>Biotic Stress (Moving Hazard):</strong> Drifts around the field, harming plants that get too close.</p>
+                </div>
+                <div class="description">
+                    <img src="assets/hazard2.png" alt="Environmental Stress">
+                    <p><strong>Environmental Stress (Static Hazard):</strong> Stationary but dangerous. Getting near it drains plant health.</p>
+                </div>
+                <p>Some plants are more resilient and lose less health when encountering these threats. Choose wisely!</p>
             </div>
 
             <!-- Stats Section -->
@@ -388,7 +412,7 @@
             sunlight = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5, img: sunlightImage };
             water = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5 + (canvasHeight * 0.5), img: waterImage };
             
-            // Hazards moving and static
+            // Hazards (Biotic and Environmental Stress)
             hazards = Array.from({ length: 3 }, () => ({
                 x: Math.random() * canvasWidth,
                 y: Math.random() * canvasHeight,
