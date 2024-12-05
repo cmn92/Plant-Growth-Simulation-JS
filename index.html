@@ -27,19 +27,29 @@
             padding: 10px;
         }
 
-        .game-section {
+        .game-section, .sidebar {
             flex: 1;
             min-width: 300px;
-            max-width: 700px;
         }
 
         .sidebar {
-            flex: 1;
-            max-width: 300px;
             background: #ffffff;
             border-radius: 8px;
             padding: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .description {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .description img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 5px;
         }
 
         canvas {
@@ -73,16 +83,22 @@
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
-                align-items: center;
             }
 
             .sidebar {
+                order: 2;
                 width: 90%;
-                order: 1;
+                margin: 0 auto;
             }
 
             .game-section {
-                order: 2;
+                order: 3;
+                width: 90%;
+                margin: 0 auto;
+            }
+
+            h1 {
+                order: 0;
             }
         }
     </style>
@@ -93,16 +109,25 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <h3>Plants Description</h3>
-            <p><strong>Plant 1:</strong> The fastest growing plant.</p>
-            <p><strong>Plant 2:</strong> The most resilient plant.</p>
-            <p><strong>Plant 3:</strong> The most resource-efficient plant.</p>
+            <div class="description">
+                <img src="assets/plant1.png" alt="Plant 1">
+                <p><strong>Plant 1:</strong> The fastest growing plant.</p>
+            </div>
+            <div class="description">
+                <img src="assets/plant2.png" alt="Plant 2">
+                <p><strong>Plant 2:</strong> The most resilient plant.</p>
+            </div>
+            <div class="description">
+                <img src="assets/plant3.png" alt="Plant 3">
+                <p><strong>Plant 3:</strong> The most resource-efficient plant.</p>
+            </div>
             <h3>Real-Time Stats</h3>
             <div id="realTimeInfo"></div>
         </div>
 
         <!-- Game Section -->
         <div class="game-section">
-            <p>Guess which plant will survive the longest and win!</p>
+            <p>There are three plants each with different strengths competing for resources(sunlight and water) and avoiding hazards(environmental and pest). Guess which plant will survive the longest and win!</p>
             <label for="guess">Your guess (1, 2, or 3): </label>
             <input type="number" id="guess" min="1" max="3">
             <button onclick="startGame()">Start Game</button>
