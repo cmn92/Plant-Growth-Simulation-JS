@@ -5,24 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Plant Growth Game</title>
     <style>
-        canvas {
-            border: 1px solid black;
-            display: block;
-            margin: 0 auto;
-        }
         body {
+            font-family: 'Arial', sans-serif;
             text-align: center;
-            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f3f4f7, #e6e9f0);
+            margin: 0;
+            padding: 0;
         }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        p {
+            color: #555;
+            font-size: 1.1rem;
+        }
+
+        canvas {
+            border: 3px solid #888;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: block;
+            background: linear-gradient(135deg, #ffffff, #d9e2f1);
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
         #realTimeInfo {
             margin-top: 10px;
+            text-align: center;
+            font-size: 1rem;
         }
+
+        #realTimeInfo div {
+            margin-bottom: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            padding: 10px;
+            width: 60%;
+            margin: 10px auto;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #realTimeInfo div strong {
+            color: #333;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            outline: none;
+            width: 60px;
+        }
+
         #congrats {
             display: none;
-            color: green;
+            color: #28a745;
             font-weight: bold;
-            font-size: 24px;
+            font-size: 2rem;
+            animation: fadeIn 1.5s infinite alternate;
             margin-top: 20px;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0.5;
+            }
+            100% {
+                opacity: 1;
+            }
         }
     </style>
 </head>
@@ -34,7 +104,7 @@
     <button onclick="startGame()">Start Game</button>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     <div id="realTimeInfo"></div>
-    <div id="congrats">Congratulations! Your guess was correct!</div>
+    <div id="congrats">🎉 Congratulations! Your guess was correct! 🎉</div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
