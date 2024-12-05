@@ -41,6 +41,15 @@
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
 
+        .stats {
+            flex: 1;
+            min-width: 300px;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
         .description {
             display: flex;
             align-items: center;
@@ -138,6 +147,12 @@
             <input type="number" id="guess" min="1" max="3">
             <button onclick="startGame()">Start Game</button>
             <canvas id="gameCanvas"></canvas>
+            <h3>Real-Time Stats</h3>
+            <div id="realTimeInfo"></div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats">
             <h3>Real-Time Stats</h3>
             <div id="realTimeInfo"></div>
         </div>
