@@ -80,6 +80,26 @@
             outline: none;
             width: 50px;
         }
+
+        #description {
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        #description div {
+            margin: 10px;
+            padding: 10px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #description img {
+            width: 40px;
+            height: 40px;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -89,6 +109,11 @@
     <input type="number" id="guess" min="1" max="3">
     <button onclick="startGame()">Start Game</button>
     <canvas id="gameCanvas"></canvas>
+    <div id="description">
+        <div><img src="assets/plant1.png" alt="Plant 1"> <strong>Plant 1:</strong> The fastest growing plant.</div>
+        <div><img src="assets/plant2.png" alt="Plant 2"> <strong>Plant 2:</strong> The most resilient plant.</div>
+        <div><img src="assets/plant3.png" alt="Plant 3"> <strong>Plant 3:</strong> The most resource-efficient plant.</div>
+    </div>
     <div id="realTimeInfo"></div>
 
     <script>
@@ -194,7 +219,7 @@
                 plant.health -= 0.1;
 
                 // Collect sunlight
-                if (Math.abs(plant.x - sunlight.x) < 20 && Math.abs(plant.y - sunlight.y) < 20) {
+                if (Math.abs(plant.x - sunlight.x) < 30 && Math.abs(plant.y - sunlight.y) < 30) {
                     plant.health += 10 * plant.resource_efficiency;
                     plant.resources_collected += 1;
                     sunlight.x = Math.random() * canvas.width;
@@ -202,7 +227,7 @@
                 }
 
                 // Collect water
-                if (Math.abs(plant.x - water.x) < 20 && Math.abs(plant.y - water.y) < 20) {
+                if (Math.abs(plant.x - water.x) < 30 && Math.abs(plant.y - water.y) < 30) {
                     plant.health += 5 * plant.resource_efficiency;
                     plant.resources_collected += 1;
                     water.x = Math.random() * canvas.width;
@@ -221,21 +246,32 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // Draw sunlight
-            ctx.drawImage(sunlight.img, sunlight.x - 20, sunlight.y - 20, 40, 40);
+            ctx.drawImage(sunlight.img, sunlight.x - 30, sunlight.y - 30, 60, 60);
 
             // Draw water
-            ctx.drawImage(water.img, water.x - 20, water.y - 20, 40, 40);
+            ctx.drawImage(water.img, water.x - 30, water.y - 30, 60, 60);
 
             // Draw hazards
             hazards.forEach(hazard => {
-                ctx.drawImage(hazard.img, hazard.x - 10, hazard.y - 10, 20, 20);
+                ctx.drawImage(hazard.img, hazard.x - 20, hazard.y - 20, 40, 40);
             });
 
             // Draw plants
             plants.forEach(plant => {
                 if (plant.health > 0) {
-                    ctx.drawImage(plant.img, plant.x - 10, plant.y - 10, 20, 20);
+                    ctx.drawImage(plant.img, plant.x - 15, plant.y - 15, 40, 40);
                 }
+            });
+
+            updateRealTimeInfo();
+        }
+
+        // Update real-time information
+        function updateRealTimeInfo() {
+            infoDiv.innerHTML = '';
+            plants.forEach(plant => {
+                const status = plant.health > 0 ? `Health: ${plant.health.toFixed(1)}, Resources: ${plant.resources_collected}` : 'Dead';
+                infoDiv.innerHTML += `<div><strong>Plant ${plant.id}:</strong> ${status}</div>`;
             });
         }
 
