@@ -17,6 +17,8 @@
             --color-plant1: #7B68EE; /* Purple */
             --color-plant2: #FF1493; /* Dark Pink */
             --color-plant3: #FFA500; /* Orange */
+            --flash-green: rgba(76, 175, 80, 0.5);
+            --flash-red: rgba(244, 67, 54, 0.5);
         }
 
         .dark-mode {
@@ -26,6 +28,9 @@
             --border-color: #30363D;
             --accent-color: #58A6FF;
             --heading-color: #C9D1D9;
+
+            --flash-green: rgba(76, 175, 80, 0.7);
+            --flash-red: rgba(244, 67, 54, 0.7);
         }
 
         * {
@@ -39,6 +44,7 @@
             margin: 0;
             padding: 0;
             overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .header {
@@ -51,6 +57,7 @@
             position: sticky;
             top: 0;
             z-index: 1000;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .header h1 {
@@ -126,6 +133,8 @@
             padding: 20px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
             transition: background 0.3s ease, color 0.3s ease;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         h3 {
@@ -174,7 +183,7 @@
             border-radius: 50%; /* Circular buttons */
             cursor: pointer;
             font-size: 1rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
             width: 70px;
             height: 70px;
             display: flex;
@@ -211,12 +220,12 @@
         }
 
         @keyframes flashGreen {
-            0% { background-color: rgba(76, 175, 80, 0.8); }
+            0% { background-color: var(--flash-green); }
             100% { background-color: transparent; }
         }
 
         @keyframes flashRed {
-            0% { background-color: rgba(244, 67, 54, 0.8); }
+            0% { background-color: var(--flash-red); }
             100% { background-color: transparent; }
         }
 
@@ -269,6 +278,34 @@
                 width: 100%;
                 max-width: 100%;
             }
+        }
+
+        /* Scrollbar Styling for Sidebar and Stats in Dark Mode */
+        .sidebar::-webkit-scrollbar, .stats::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar::-webkit-scrollbar-track, .stats::-webkit-scrollbar-track {
+            background: var(--card-bg);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb, .stats::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 4px;
+        }
+
+        /* Scrollbar Styling for Sidebar and Stats in Light Mode */
+        body:not(.dark-mode) .sidebar::-webkit-scrollbar, body:not(.dark-mode) .stats::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        body:not(.dark-mode) .sidebar::-webkit-scrollbar-track, body:not(.dark-mode) .stats::-webkit-scrollbar-track {
+            background: var(--card-bg);
+        }
+
+        body:not(.dark-mode) .sidebar::-webkit-scrollbar-thumb, body:not(.dark-mode) .stats::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -352,6 +389,8 @@
     <!-- Sound Effects -->
     <audio id="collectSound" src="assets/collect.mp3"></audio>
     <audio id="hitSound" src="assets/hit.mp3"></audio>
+    <audio id="winSound" src="assets/win.mp3"></audio>
+    <audio id="loseSound" src="assets/lose.mp3"></audio>
     <audio id="gameEndSound" src="assets/game-end.mp3"></audio>
 
     <script>
@@ -374,8 +413,8 @@
 
         let userGuess = null;
         let plants = [];
-        let sunlight = { x: 0, y: 0, img: null };
-        let water = { x: 0, y: 0, img: null };
+        let sunlight = { x: 0, y: 0, img: null, radius: 30 };
+        let water = { x: 0, y: 0, img: null, radius: 30 };
         let hazards = [];
         let gameEnded = false;
         let gameDuration = 120; // Game lasts for 120 seconds (2 minutes)
@@ -576,7 +615,7 @@
                 plant.health -= 0.2;
 
                 // Collect resources
-                if (distToSunlight < (sunlight.radius)) {
+                if (distToSunlight < sunlight.radius) {
                     plant.health += 10 * plant.resource_efficiency;
                     plant.resources_collected += 1;
                     sunlight.x = Math.random() * canvas.width;
@@ -584,7 +623,7 @@
                     triggerFlash(plant, 'green');
                     playSound('collect');
                 } 
-                if (distToWater < (water.radius)) { // Allow collecting both if in range
+                if (distToWater < water.radius) { // Allow collecting both if in range
                     plant.health += 5 * plant.resource_efficiency;
                     plant.resources_collected += 1;
                     water.x = Math.random() * canvas.width;
@@ -684,8 +723,16 @@
             // Determine best plant by resources collected
             const bestPlant = plants.sort((a, b) => b.resources_collected - a.resources_collected)[0];
 
-            // Play game end sound
-            playSound('gameEnd');
+            // Play appropriate sound
+            if (timeUp || !allDead) {
+                if (bestPlant.id === userGuess) {
+                    playSound('win');
+                } else {
+                    playSound('lose');
+                }
+            } else {
+                playSound('gameEnd');
+            }
 
             setTimeout(() => {
                 if (timeUp) {
@@ -744,13 +791,15 @@
             setTimeout(() => {
                 plant.isFlashing = false;
                 plant.flashColor = '';
-            }, 700);
+            }, 700); // Increased duration for more dramatic effect
         }
 
         // Sound Effects
         function playSound(effect) {
             const collectSound = document.getElementById('collectSound');
             const hitSound = document.getElementById('hitSound');
+            const winSound = document.getElementById('winSound');
+            const loseSound = document.getElementById('loseSound');
             const gameEndSound = document.getElementById('gameEndSound');
 
             switch(effect) {
@@ -761,6 +810,14 @@
                 case 'hit':
                     hitSound.currentTime = 0;
                     hitSound.play();
+                    break;
+                case 'win':
+                    winSound.currentTime = 0;
+                    winSound.play();
+                    break;
+                case 'lose':
+                    loseSound.currentTime = 0;
+                    loseSound.play();
                     break;
                 case 'gameEnd':
                     gameEndSound.currentTime = 0;
@@ -778,17 +835,6 @@
                     gameDuration--;
                 }
             }, 1000);
-        }
-
-        // Ensure that clicking buttons after game ends can start a new game
-        function selectGuess(guess) {
-            if (userGuess !== null && !gameEnded) return; // Prevent multiple selections during active game
-            userGuess = guess;
-            if (imagesLoaded === totalImages) {
-                initializeGame();
-                gameLoop();
-                startTimer();
-            }
         }
     </script>
 </body>
