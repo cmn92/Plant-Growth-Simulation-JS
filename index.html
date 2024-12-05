@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Growth Game</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 0 auto;
+        }
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        #realTimeInfo {
+            margin-top: 10px;
+        }
+        #congrats {
+            display: none;
+            color: green;
+            font-weight: bold;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Plant Growth Game</h1>
+    <p>Guess which plant will survive the longest and win!</p>
+    <label for="guess">Enter your guess (1, 2, or 3): </label>
+    <input type="number" id="guess" min="1" max="3">
+    <button onclick="startGame()">Start Game</button>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="realTimeInfo"></div>
+    <div id="congrats">Congratulations! Your guess was correct!</div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const infoDiv = document.getElementById('realTimeInfo');
+        const congratsDiv = document.getElementById('congrats');
+
+        let userGuess = null;
+        let plants = [];
+        let sunlight = { x: 400, y: 200, color: 'yellow' };
+        let water = { x: 600, y: 300, color: 'blue' };
+        let hazards = [];
+        let gameEnded = false;
+
+        // Initialize game data
+        function initializeGame() {
+            plants = Array.from({ length: 3 }, (_, i) => ({
+                id: i + 1,
+                x: Math.random() * canvas.width,
+                y: canvas.height - 50,
+                health: 100,
+                growth_rate: Math.random() * 3 + 1,
+                hazard_resistance: Math.random() * 0.5 + 0.5,
+                resource_efficiency: Math.random() * 0.5 + 0.5,
+                resources_collected: 0,
+                distance_traveled: 0,
+                color: ['green', 'blue', 'orange'][i],
+            }));
+
+            hazards = Array.from({ length: 5 }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                color: 'red',
+            }));
+        }
+
+        // Start the game
+        function startGame() {
+            userGuess = parseInt(document.getElementById('guess').value);
+            if (![1, 2, 3].includes(userGuess)) {
+                alert('Please enter a valid guess (1, 2, or 3).');
+                return;
+            }
+            document.getElementById('guess').disabled = true;
+            document.querySelector('button').disabled = true;
+            initializeGame();
+            gameLoop();
+        }
+
+        // Draw game elements
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw sunlight
+            ctx.fillStyle = sunlight.color;
+            ctx.beginPath();
+            ctx.arc(sunlight.x, sunlight.y, 20, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Draw water
+            ctx.fillStyle = water.color;
+            ctx.beginPath();
+            ctx.arc(water.x, water.y, 20, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Draw hazards
+            hazards.forEach(hazard => {
+                ctx.fillStyle = hazard.color;
+                ctx.beginPath();
+                ctx.arc(hazard.x, hazard.y, 10, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+
+            // Draw plants
+            plants.forEach(plant => {
+                if (plant.health > 0) {
+                    ctx.fillStyle = plant.color;
+                    ctx.fillRect(plant.x, plant.y, 10, 10);
+                }
+            });
+        }
+
+        // Update game state
+        function updateGame() {
+            let alivePlants = 0;
+            plants.forEach(plant => {
+                if (plant.health <= 0) return;
+
+                // Increment count of alive plants
+                alivePlants++;
+
+                // Move plants toward sunlight or water
+                const dx = sunlight.x - plant.x;
+                const dy = sunlight.y - plant.y;
+                const distance = Math.sqrt(dx ** 2 + dy ** 2);
+                if (distance > 0) {
+                    plant.x += (dx / distance) * plant.growth_rate;
+                    plant.y += (dy / distance) * plant.growth_rate;
+                }
+
+                // Check for resource collection
+                if (distance < 20) {
+                    plant.health += 10 * plant.resource_efficiency;
+                    plant.resources_collected += 1;
+                    sunlight.x = Math.random() * canvas.width;
+                    sunlight.y = Math.random() * canvas.height / 2;
+                }
+
+                // Gradual health decrease
+                plant.health -= 0.1;
+
+                // Update distance traveled
+                plant.distance_traveled += plant.growth_rate;
+            });
+
+            // Check if only one plant remains alive
+            if (alivePlants === 1) {
+                gameEnded = true;
+                endGame();
+            }
+        }
+
+        // Update real-time info
+        function updateInfo() {
+            infoDiv.innerHTML = plants
+                .map(plant => `
+                    <div>
+                        <strong>Plant ${plant.id}:</strong>
+                        Health: ${plant.health.toFixed(2)} | 
+                        Resources: ${plant.resources_collected} | 
+                        Distance: ${plant.distance_traveled.toFixed(2)}
+                    </div>
+                `)
+                .join('');
+        }
+
+        // End game and display results
+        function endGame() {
+            const bestPlant = plants.sort((a, b) => b.resources_collected - a.resources_collected)[0];
+            if (bestPlant.id === userGuess) {
+                congratsDiv.style.display = 'block';
+            } else {
+                alert(`Better luck next time! The best-performing plant was Plant ${bestPlant.id}.`);
+            }
+        }
+
+        // Main game loop
+        function gameLoop() {
+            if (!gameEnded) {
+                updateGame();
+                drawGame();
+                updateInfo();
+                requestAnimationFrame(gameLoop);
+            }
+        }
+    </script>
+</body>
+</html>
