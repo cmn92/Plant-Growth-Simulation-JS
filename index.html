@@ -14,38 +14,40 @@
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 1.8rem;
             color: #333;
-            margin-top: 20px;
+            margin: 10px;
         }
 
         p {
             color: #555;
-            font-size: 1.1rem;
+            font-size: 1rem;
+            margin: 5px;
         }
 
         canvas {
-            border: 3px solid #888;
+            border: 2px solid #888;
             border-radius: 10px;
-            margin: 20px auto;
-            display: block;
+            margin: 10px auto;
             background: linear-gradient(135deg, #ffffff, #d9e2f1);
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            display: block;
+            max-width: 95%;
         }
 
         #realTimeInfo {
             margin-top: 10px;
             text-align: center;
-            font-size: 1rem;
+            font-size: 0.9rem;
+            width: 90%;
+            margin: 0 auto;
         }
 
         #realTimeInfo div {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             background: #f9f9f9;
             border-radius: 5px;
-            padding: 10px;
-            width: 60%;
-            margin: 10px auto;
+            padding: 8px;
             box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
         }
 
@@ -54,7 +56,7 @@
         }
 
         button {
-            padding: 10px 20px;
+            padding: 10px 15px;
             font-size: 1rem;
             background: #4CAF50;
             color: white;
@@ -62,6 +64,8 @@
             border-radius: 5px;
             cursor: pointer;
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 10px auto;
+            display: block;
         }
 
         button:hover {
@@ -69,21 +73,21 @@
         }
 
         input[type="number"] {
-            padding: 10px;
+            padding: 8px;
             font-size: 1rem;
             border-radius: 5px;
             border: 1px solid #ddd;
             outline: none;
-            width: 60px;
+            width: 50px;
         }
 
         #congrats {
             display: none;
             color: #28a745;
             font-weight: bold;
-            font-size: 2rem;
+            font-size: 1.5rem;
             animation: fadeIn 1.5s infinite alternate;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
         @keyframes fadeIn {
@@ -99,10 +103,10 @@
 <body>
     <h1>Plant Growth Game</h1>
     <p>Guess which plant will survive the longest and win!</p>
-    <label for="guess">Enter your guess (1, 2, or 3): </label>
+    <label for="guess">Your guess (1, 2, or 3): </label>
     <input type="number" id="guess" min="1" max="3">
     <button onclick="startGame()">Start Game</button>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <canvas id="gameCanvas"></canvas>
     <div id="realTimeInfo"></div>
     <div id="congrats">🎉 Congratulations! Your guess was correct! 🎉</div>
 
@@ -114,17 +118,39 @@
 
         let userGuess = null;
         let plants = [];
-        let sunlight = { x: 400, y: 200, color: 'yellow' };
-        let water = { x: 600, y: 300, color: 'blue' };
+        let sunlight = { x: 0, y: 0, color: 'yellow' };
+        let water = { x: 0, y: 0, color: 'blue' };
         let hazards = [];
         let gameEnded = false;
 
+        // Set canvas dimensions dynamically based on screen size
+        function resizeCanvas() {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const canvasWidth = Math.min(800, screenWidth * 0.9);
+            const canvasHeight = Math.min(600, screenHeight * 0.6);
+
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+        }
+
         // Initialize game data
         function initializeGame() {
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+
+            sunlight = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5, color: 'yellow' };
+            water = { x: Math.random() * canvasWidth, y: Math.random() * canvasHeight * 0.5 + canvasHeight * 0.5, color: 'blue' };
+            hazards = Array.from({ length: 5 }, () => ({
+                x: Math.random() * canvasWidth,
+                y: Math.random() * canvasHeight,
+                color: 'red',
+            }));
+
             plants = Array.from({ length: 3 }, (_, i) => ({
                 id: i + 1,
-                x: Math.random() * canvas.width,
-                y: canvas.height - 50,
+                x: Math.random() * canvasWidth,
+                y: canvasHeight - 30,
                 health: 100,
                 growth_rate: Math.random() * 3 + 1,
                 hazard_resistance: Math.random() * 0.5 + 0.5,
@@ -132,12 +158,6 @@
                 resources_collected: 0,
                 distance_traveled: 0,
                 color: ['green', 'blue', 'orange'][i],
-            }));
-
-            hazards = Array.from({ length: 5 }, () => ({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                color: 'red',
             }));
         }
 
@@ -150,6 +170,7 @@
             }
             document.getElementById('guess').disabled = true;
             document.querySelector('button').disabled = true;
+            resizeCanvas();
             initializeGame();
             gameLoop();
         }
@@ -210,7 +231,7 @@
                     plant.health += 10 * plant.resource_efficiency;
                     plant.resources_collected += 1;
                     sunlight.x = Math.random() * canvas.width;
-                    sunlight.y = Math.random() * canvas.height / 2;
+                    sunlight.y = Math.random() * canvas.height * 0.5;
                 }
 
                 // Gradual health decrease
@@ -243,22 +264,19 @@
 
         // End game and display results
         function endGame() {
-            const bestPlant = plants.sort((a, b) => b.resources_collected - a.resources_collected)[0];
+            const bestPlant = plants.sort((a, b) => b.health - a.health)[0];
             if (bestPlant.id === userGuess) {
                 congratsDiv.style.display = 'block';
-            } else {
-                alert(`Better luck next time! The best-performing plant was Plant ${bestPlant.id}.`);
             }
         }
 
         // Main game loop
         function gameLoop() {
-            if (!gameEnded) {
-                updateGame();
-                drawGame();
-                updateInfo();
-                requestAnimationFrame(gameLoop);
-            }
+            if (gameEnded) return;
+            updateGame();
+            drawGame();
+            updateInfo();
+            requestAnimationFrame(gameLoop);
         }
     </script>
 </body>
