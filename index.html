@@ -6,6 +6,7 @@
     <title>Plant Growth Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        /* Root Variables */
         :root {
             --bg-color: #f8fafd;
             --text-color: #333;
@@ -21,6 +22,7 @@
             --flash-red: rgba(244, 67, 54, 0.5);
         }
 
+        /* Dark Mode Variables */
         .dark-mode {
             --bg-color: #0D1117;
             --text-color: #C9D1D9;
@@ -33,6 +35,7 @@
             --flash-red: rgba(244, 67, 54, 0.7);
         }
 
+        /* Global Styles */
         * {
             box-sizing: border-box;
         }
@@ -83,7 +86,7 @@
             gap: 10px;
         }
 
-        .toggle-theme, .reset-button {
+        .toggle-theme {
             background: var(--card-bg);
             color: var(--text-color);
             border: 1px solid var(--border-color);
@@ -94,7 +97,7 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        .toggle-theme:hover, .reset-button:hover {
+        .toggle-theme:hover {
             background: var(--accent-color);
             color: #fff;
         }
@@ -103,8 +106,6 @@
         .nav-menu {
             display: flex;
             gap: 20px;
-            margin-top: 10px;
-            justify-content: center;
         }
 
         .nav-menu button {
@@ -136,7 +137,7 @@
             gap: 20px;
         }
 
-        /* Flex layout for game and stats */
+        /* Main Content Layout */
         .main-content {
             display: flex;
             flex-direction: column;
@@ -149,35 +150,63 @@
             }
         }
 
-        /* Game Section Styles */
-        .game-section {
+        .game-section, .stats-section {
             background: var(--card-bg);
             color: var(--text-color);
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
             transition: background 0.3s ease, color 0.3s ease;
-            flex: 2;
+        }
+
+        @media (min-width: 1025px) {
+            .game-section, .stats-section {
+                flex: 1;
+            }
+        }
+
+        h3 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            color: var(--heading-color);
+        }
+
+        .description {
             display: flex;
-            flex-direction: column;
             align-items: center;
+            margin: 15px 0;
         }
 
-        .game-section p {
-            font-size: 1.1rem;
-            text-align: center;
+        .description img {
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            border-radius: 5px;
         }
 
-        .guess-container {
+        canvas {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--card-bg), var(--bg-color));
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            max-height: 400px;
+            margin-top: 20px; /* Reduced spacing above canvas */
+        }
+
+        /* Plant Selection and Reset Buttons */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             margin-top: 20px;
-            text-align: center;
         }
 
         .guess-buttons {
             display: flex;
             gap: 20px; /* Increased spacing between buttons */
-            margin-top: 20px; /* Added spacing above buttons */
-            justify-content: center;
         }
 
         .guess-buttons button {
@@ -215,91 +244,58 @@
             opacity: 0.9;
         }
 
-        /* Canvas Styles */
-        canvas {
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--card-bg), var(--bg-color));
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            height: auto;
-            max-width: 100%;
-            max-height: 400px;
-            margin-top: 30px; /* Increased spacing above canvas */
-        }
-
-        /* Stats Section Styles */
-        .stats-section {
+        /* Reset Button */
+        .reset-button {
             background: var(--card-bg);
             color: var(--text-color);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
             transition: background 0.3s ease, color 0.3s ease;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
         }
 
-        .stats-section h3 {
-            margin-top: 0;
-            font-size: 1.4rem;
-            color: var(--heading-color);
-            text-align: center;
+        .reset-button:hover {
+            background: var(--accent-color);
+            color: #fff;
         }
 
-        .stats-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            justify-content: center;
+        /* Real-Time Statistics Styles */
+        .stats-section {
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        .stat-label {
-            flex: 1;
+        .stat-item .label {
             font-weight: 500;
         }
 
-        .stat-bar {
-            flex: 2;
-            height: 20px;
-            background: var(--border-color);
-            border-radius: 10px;
+        .progress-bar {
+            width: 100%;
+            background-color: var(--border-color);
+            border-radius: 5px;
             overflow: hidden;
-            position: relative;
+            height: 20px;
+            margin-top: 5px;
         }
 
-        .stat-fill {
+        .progress {
             height: 100%;
-            width: 0%;
-            background: var(--accent-color);
-            transition: width 0.5s ease, background 0.5s ease;
+            transition: width 0.5s ease, background-color 0.3s ease;
         }
 
-        /* Flashing Feedback */
-        .flash-green {
-            animation: flashGreen 0.7s forwards;
+        /* Green for Healthy, Red for Low Health */
+        .healthy {
+            background-color: #4CAF50;
         }
 
-        .flash-red {
-            animation: flashRed 0.7s forwards;
-        }
-
-        @keyframes flashGreen {
-            0% { background-color: var(--flash-green); }
-            100% { background-color: transparent; }
-        }
-
-        @keyframes flashRed {
-            0% { background-color: var(--flash-red); }
-            100% { background-color: transparent; }
+        .low-health {
+            background-color: #f44336;
         }
 
         /* Collapsible About Section */
@@ -307,60 +303,78 @@
             display: none;
             flex-direction: column;
             gap: 15px;
-            margin-top: 20px;
         }
 
         .about-section.active {
             display: flex;
         }
 
-        /* Scrollbar Styling for Sidebar and Stats in Dark Mode */
-        .sidebar::-webkit-scrollbar, .stats-section::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .sidebar::-webkit-scrollbar-track, .stats-section::-webkit-scrollbar-track {
+        .collapsible {
             background: var(--card-bg);
-        }
-
-        .sidebar::-webkit-scrollbar-thumb, .stats-section::-webkit-scrollbar-thumb {
-            background-color: var(--border-color);
-            border-radius: 4px;
-        }
-
-        /* Scrollbar Styling for Sidebar and Stats in Light Mode */
-        body:not(.dark-mode) .sidebar::-webkit-scrollbar, body:not(.dark-mode) .stats-section::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        body:not(.dark-mode) .sidebar::-webkit-scrollbar-track, body:not(.dark-mode) .stats-section::-webkit-scrollbar-track {
-            background: var(--card-bg);
-        }
-
-        body:not(.dark-mode) .sidebar::-webkit-scrollbar-thumb, body:not(.dark-mode) .stats-section::-webkit-scrollbar-thumb {
-            background-color: var(--border-color);
-            border-radius: 4px;
-        }
-
-        /* About Section Toggle Button */
-        .toggle-about {
-            background: var(--accent-color);
-            color: #fff;
-            border: none;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
             padding: 10px 15px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             transition: background 0.3s ease, color 0.3s ease;
-            margin-top: 10px;
-            align-self: center;
         }
 
-        .toggle-about:hover {
-            background: #388e3c;
+        .collapsible:hover {
+            background: var(--accent-color);
+            color: #fff;
+        }
+
+        .collapsible-content {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px 15px;
+            border-left: 2px solid var(--accent-color);
+        }
+
+        .collapsible.active + .collapsible-content {
+            display: flex;
+        }
+
+        /* Scrollbar Styling for Stats Section */
+        .stats-section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .stats-section::-webkit-scrollbar-track {
+            background: var(--card-bg);
+        }
+
+        .stats-section::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 4px;
         }
 
         /* Responsive Adjustments */
+        @media (min-width: 1025px) {
+            .main-content {
+                flex-direction: row;
+            }
+
+            .game-section, .stats-section {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .game-section, .stats-section {
+                width: 100%;
+            }
+        }
+
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -369,18 +383,26 @@
 
             .nav-menu {
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
+                width: 100%;
             }
 
-            .stats-section {
-                max-height: none;
-                overflow-y: auto;
+            .main-content {
+                flex-direction: column;
+            }
+
+            .game-section, .stats-section {
+                width: 100%;
+            }
+
+            .collapsible-content {
+                border-left: none;
+                border-top: 2px solid var(--accent-color);
             }
         }
     </style>
 </head>
 <body>
+    <!-- Header with Logo and Title -->
     <div class="header">
         <div class="logo">
             <img src="assets/logo.png" alt="Game Logo">
@@ -388,35 +410,49 @@
         </div>
         <div class="header-buttons">
             <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark/Light Mode</button>
-            <button class="reset-button" onclick="resetGame()">Reset Game</button>
         </div>
     </div>
 
+    <!-- Navigation Menu -->
     <div class="nav-menu">
-        <button class="nav-play active" onclick="switchTab('play')">Play Game</button>
-        <button class="nav-about" onclick="switchTab('about')">About Game</button>
+        <button id="playGameTab" class="active" onclick="switchTab('play')">Play Game</button>
+        <button id="aboutGameTab" onclick="switchTab('about')">About Game</button>
     </div>
 
+    <!-- Main Container -->
     <div class="container">
-        <div class="main-content">
+        <!-- Play Game Tab Content -->
+        <div id="playGame" class="main-content">
             <!-- Game Section -->
-            <div class="game-section" id="playTab">
-                <p>Pick a plant to back and watch the race unfold!</p>
-                <div class="guess-container">
-                    <p>Select a Plant:</p>
+            <div class="game-section">
+                <div class="controls">
                     <div class="guess-buttons">
                         <button class="plant1" onclick="selectGuess(1)">1</button>
                         <button class="plant2" onclick="selectGuess(2)">2</button>
                         <button class="plant3" onclick="selectGuess(3)">3</button>
                     </div>
+                    <button class="reset-button" onclick="resetGame()">Reset Game</button>
                 </div>
                 <canvas id="gameCanvas"></canvas>
             </div>
 
-            <!-- About Section -->
-            <div class="about-section" id="aboutTab">
-                <h3>About the Plants</h3>
-                <p>In this simulation, three unique plants each have special strengths. They race to gather sunlight and water, while dodging hazards. Cheer on your choice as they strive for survival!</p>
+            <!-- Real-Time Statistics Section -->
+            <div class="stats-section">
+                <h3>Real-Time Statistics</h3>
+                <div id="realTimeInfo">
+                    <!-- Dynamic Stats Will Be Injected Here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- About Game Tab Content -->
+        <div id="aboutGame" class="about-section">
+            <!-- Collapsible Sections for Plants, Resources, and Hazards -->
+            <div class="collapsible" onclick="toggleCollapse(this)">
+                <span>About the Plants</span>
+                <span>▼</span>
+            </div>
+            <div class="collapsible-content">
                 <div class="description">
                     <img src="assets/plant1.png" alt="Plant 1">
                     <p><strong>Plant 1:</strong> Extremely fast growth, but average resilience and efficiency.</p>
@@ -429,9 +465,13 @@
                     <img src="assets/plant3.png" alt="Plant 3">
                     <p><strong>Plant 3:</strong> Highly efficient at using resources, thrives with less input.</p>
                 </div>
+            </div>
 
-                <h3>About Resources</h3>
-                <p>The plants compete for two essential resources:</p>
+            <div class="collapsible" onclick="toggleCollapse(this)">
+                <span>About Resources</span>
+                <span>▼</span>
+            </div>
+            <div class="collapsible-content">
                 <div class="description">
                     <img src="assets/sunlight.png" alt="Sunlight">
                     <p><strong>Sunlight:</strong> Abundant in upper regions. Greatly boosts plant health.</p>
@@ -441,9 +481,13 @@
                     <p><strong>Water:</strong> Located lower down. Provides moderate but steady health gains.</p>
                 </div>
                 <p>Collecting these resources replenishes health and allows plants to survive longer.</p>
+            </div>
 
-                <h3>About Hazards</h3>
-                <p>Not everything is easy for the plants. Various threats lurk in the field:</p>
+            <div class="collapsible" onclick="toggleCollapse(this)">
+                <span>About Hazards</span>
+                <span>▼</span>
+            </div>
+            <div class="collapsible-content">
                 <div class="description">
                     <img src="assets/hazard.png" alt="Biotic Stress">
                     <p><strong>Biotic Stress (Moving Hazard):</strong> Drifts around the field, harming plants that get too close.</p>
@@ -453,14 +497,6 @@
                     <p><strong>Environmental Stress (Static Hazard):</strong> Stationary but dangerous. Getting near it drains plant health.</p>
                 </div>
                 <p>Some plants are more resilient and lose less health when encountering these threats. Choose wisely!</p>
-            </div>
-        </div>
-
-        <!-- Stats Section -->
-        <div class="stats-section" id="statsTab">
-            <h3>Real-Time Statistics</h3>
-            <div class="stats-content" id="realTimeInfo">
-                <!-- Dynamic Stats will be injected here -->
             </div>
         </div>
     </div>
@@ -473,6 +509,7 @@
     <audio id="gameEndSound" src="assets/game-end.mp3"></audio>
 
     <script>
+        // Toggle Dark/Light Mode
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             const isDarkMode = document.body.classList.contains('dark-mode');
@@ -490,29 +527,38 @@
             resizeCanvas();
         };
 
-        // Navigation Menu Functionality
+        // Tab Switching Functionality
         function switchTab(tab) {
-            const playTab = document.getElementById('playTab');
-            const aboutTab = document.getElementById('aboutTab');
-            const navPlay = document.querySelector('.nav-play');
-            const navAbout = document.querySelector('.nav-about');
+            const playGameTab = document.getElementById('playGameTab');
+            const aboutGameTab = document.getElementById('aboutGameTab');
+            const playGame = document.getElementById('playGame');
+            const aboutGame = document.getElementById('aboutGame');
 
             if (tab === 'play') {
-                playTab.style.display = 'flex';
-                aboutTab.style.display = 'none';
-                navPlay.classList.add('active');
-                navAbout.classList.remove('active');
+                playGameTab.classList.add('active');
+                aboutGameTab.classList.remove('active');
+                playGame.style.display = 'flex';
+                aboutGame.style.display = 'none';
             } else {
-                playTab.style.display = 'none';
-                aboutTab.style.display = 'flex';
-                navPlay.classList.remove('active');
-                navAbout.classList.add('active');
+                aboutGameTab.classList.add('active');
+                playGameTab.classList.remove('active');
+                playGame.style.display = 'none';
+                aboutGame.style.display = 'flex';
             }
         }
 
-        // Initialize to show Play Game by default
-        switchTab('play');
+        // Collapsible Sections in About Game
+        function toggleCollapse(element) {
+            element.classList.toggle('active');
+            const content = element.nextElementSibling;
+            if (content.style.display === "flex") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "flex";
+            }
+        }
 
+        // Variables for Game Logic
         let userGuess = null;
         let plants = [];
         let sunlight = { x: 0, y: 0, img: null, radius: 30 };
@@ -526,7 +572,7 @@
         const ctx = canvas.getContext('2d');
         const infoDiv = document.getElementById('realTimeInfo');
 
-        // Load images
+        // Load Images
         const plantImages = [
             new Image(),
             new Image(),
@@ -569,6 +615,7 @@
         hazardImage.onload = imageLoaded;
         staticHazardImage.onload = imageLoaded;
 
+        // Resize Canvas Function
         function resizeCanvas() {
             const containerWidth = canvas.parentElement.clientWidth;
             const containerHeight = window.innerHeight * 0.6; // Adjust as needed
@@ -582,13 +629,14 @@
             }
         }
 
-        // Handle window resize
+        // Handle Window Resize
         window.addEventListener('resize', () => {
             if (!gameEnded && userGuess !== null) {
                 resizeCanvas();
             }
         });
 
+        // Plant Selection Function
         function selectGuess(guess) {
             if (userGuess !== null && !gameEnded) return; // Prevent multiple selections during active game
             userGuess = guess;
@@ -599,6 +647,7 @@
             }
         }
 
+        // Initialize Game Function
         function initializeGame() {
             const canvasWidth = canvas.width;
             const canvasHeight = canvas.height;
@@ -676,6 +725,17 @@
             ];
         }
 
+        // Start Game Timer
+        function startTimer() {
+            gameTimer = setInterval(() => {
+                if (gameDuration > 0) {
+                    gameDuration--;
+                    updateRealTimeInfo();
+                }
+            }, 1000);
+        }
+
+        // Update Game Function
         function updateGame() {
             let alivePlants = 0;
 
@@ -761,8 +821,11 @@
                 gameEnded = true;
                 endGame(true);
             }
+
+            updateRealTimeInfo();
         }
 
+        // Draw Game Function
         function drawGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -791,51 +854,33 @@
                     }
                 }
             });
-
-            updateRealTimeInfo();
         }
 
+        // Update Real-Time Statistics
         function updateRealTimeInfo() {
             infoDiv.innerHTML = '';
             plants.forEach(plant => {
                 const healthPercentage = Math.max(0, Math.min(plant.health, 100));
-                const resourcePercentage = Math.min(plant.resources_collected * 10, 100); // Assuming max resources = 10
-                const statusColor = healthPercentage > 60 ? '#4CAF50' : healthPercentage > 30 ? '#FF9800' : '#F44336';
-                const resourceColor = resourcePercentage > 60 ? '#4CAF50' : resourcePercentage > 30 ? '#FF9800' : '#F44336';
-
-                // Plant Health Bar
+                const status = plant.health > 0 
+                    ? `Health: ${healthPercentage.toFixed(1)}%, Resources: ${plant.resources_collected}`
+                    : 'Dead';
+                const healthClass = healthPercentage > 50 ? 'healthy' : 'low-health';
                 infoDiv.innerHTML += `
                     <div class="stat-item">
-                        <div class="stat-label"><strong>Plant ${plant.id} Health:</strong></div>
-                        <div class="stat-bar">
-                            <div class="stat-fill" style="width: ${healthPercentage}%; background: ${statusColor};"></div>
+                        <div class="label">Plant ${plant.id}</div>
+                        <div class="progress-bar">
+                            <div class="progress ${healthClass}" style="width: ${healthPercentage}%"></div>
                         </div>
-                    </div>
-                `;
-
-                // Plant Resources Bar
-                infoDiv.innerHTML += `
-                    <div class="stat-item">
-                        <div class="stat-label"><strong>Plant ${plant.id} Resources:</strong></div>
-                        <div class="stat-bar">
-                            <div class="stat-fill" style="width: ${resourcePercentage}%; background: ${resourceColor};"></div>
-                        </div>
+                        <div class="resources">Resources Collected: ${plant.resources_collected}</div>
                     </div>
                 `;
             });
 
-            // Display remaining time with color-coding
-            const timeColor = gameDuration > 60 ? '#4CAF50' : gameDuration > 30 ? '#FF9800' : '#F44336';
-            infoDiv.innerHTML += `
-                <div class="stat-item">
-                    <div class="stat-label"><strong>Time Left:</strong></div>
-                    <div class="stat-bar">
-                        <div class="stat-fill" style="width: ${(gameDuration / 120) * 100}%; background: ${timeColor};"></div>
-                    </div>
-                </div>
-            `;
+            // Display remaining time
+            infoDiv.innerHTML += `<div class="stat-item"><div class="label">Time Left</div><div class="progress-bar"><div class="progress healthy" style="width: ${Math.max(0, (gameDuration / 120) * 100)}%"></div></div><div class="resources">${gameDuration} seconds</div></div>`;
         }
 
+        // End Game Function
         function endGame(allDead = false, timeUp = false) {
             // Stop the timer
             clearInterval(gameTimer);
@@ -876,6 +921,7 @@
             }, 200);
         }
 
+        // Reset Game Function
         function resetGame() {
             gameEnded = false;
             userGuess = null;
@@ -888,10 +934,11 @@
             clearInterval(gameTimer);
             gameDuration = 120; // Reset game duration
 
-            // Reset navigation to Play Game
+            // Optionally, switch back to Play Game tab
             switchTab('play');
         }
 
+        // Game Loop Function
         function gameLoop() {
             if (!gameEnded) {
                 updateGame();
@@ -900,14 +947,14 @@
             }
         }
 
-        // Utility function to calculate distance between two points
+        // Utility Function to Calculate Distance
         function getDistance(x1, y1, x2, y2) {
             const dx = x2 - x1;
             const dy = y2 - y1;
             return Math.sqrt(dx * dx + dy * dy);
         }
 
-        // Function to trigger flashing feedback
+        // Function to Trigger Flashing Feedback
         function triggerFlash(plant, color) {
             plant.isFlashing = true;
             plant.flashColor = color === 'green' ? 'rgba(76, 175, 80, 0.5)' : 'rgba(244, 67, 54, 0.5)'; // Green or Red
@@ -917,7 +964,7 @@
             }, 700); // Increased duration for more dramatic effect
         }
 
-        // Sound Effects
+        // Sound Effects Function
         function playSound(effect) {
             const collectSound = document.getElementById('collectSound');
             const hitSound = document.getElementById('hitSound');
@@ -951,13 +998,24 @@
             }
         }
 
-        // Start Game Timer
-        function startTimer() {
-            gameTimer = setInterval(() => {
-                if (gameDuration > 0) {
-                    gameDuration--;
-                }
-            }, 1000);
+        // Initialize Game on Tab Switch if Images are Loaded
+        function switchTab(tab) {
+            const playGameTab = document.getElementById('playGameTab');
+            const aboutGameTab = document.getElementById('aboutGameTab');
+            const playGame = document.getElementById('playGame');
+            const aboutGame = document.getElementById('aboutGame');
+
+            if (tab === 'play') {
+                playGameTab.classList.add('active');
+                aboutGameTab.classList.remove('active');
+                playGame.style.display = 'flex';
+                aboutGame.style.display = 'none';
+            } else {
+                aboutGameTab.classList.add('active');
+                playGameTab.classList.remove('active');
+                playGame.style.display = 'none';
+                aboutGame.style.display = 'flex';
+            }
         }
     </script>
 </body>
