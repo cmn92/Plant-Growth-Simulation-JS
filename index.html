@@ -610,16 +610,15 @@
             const isDarkMode = document.body.classList.contains('dark-mode');
             localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
 
-            // Update SweetAlert2 theme
-            Swal.fire({
-                title: 'Theme Changed!',
-                text: isDarkMode ? 'Dark mode enabled.' : 'Light mode enabled.',
-                icon: 'success',
-                confirmButtonText: 'OK',
-                background: isDarkMode ? '#161B22' : '#ffffff',
-                color: isDarkMode ? '#C9D1D9' : '#333333',
-                iconColor: isDarkMode ? '#58A6FF' : '#4CAF50'
-            });
+            // Optional: Update Toggle Button Icon
+            const toggleButton = document.querySelector('.toggle-theme i');
+            if (isDarkMode) {
+                toggleButton.classList.remove('fa-adjust');
+                toggleButton.classList.add('fa-sun');
+            } else {
+                toggleButton.classList.remove('fa-sun');
+                toggleButton.classList.add('fa-adjust');
+            }
         }
 
         // Apply theme based on saved preference
@@ -627,6 +626,10 @@
             const savedTheme = localStorage.getItem('theme') || 'light';
             if (savedTheme === 'dark') {
                 document.body.classList.add('dark-mode');
+                // Update Toggle Button Icon
+                const toggleButton = document.querySelector('.toggle-theme i');
+                toggleButton.classList.remove('fa-adjust');
+                toggleButton.classList.add('fa-sun');
             }
 
             // Initialize canvas size
@@ -976,11 +979,10 @@
                 `;
             });
 
-            // Display remaining time
+            // Display remaining time without image
             const timePercentage = Math.max(0, (gameDuration / 120) * 100);
             infoDiv.innerHTML += `
                 <div class="stat-item">
-                    <img src="assets/time.png" alt="Time Left">
                     <div class="stat-details">
                         <div class="label"><span class="time-display">⏱️ Time Left</span></div>
                         <div class="progress-bar">
