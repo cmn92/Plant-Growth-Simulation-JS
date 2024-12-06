@@ -6,12 +6,12 @@
     <title>Plant Growth Game</title>
     <!-- Modern Font: Montserrat -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <!-- SweetAlert2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Root Variables */
         :root {
@@ -94,23 +94,6 @@
             align-items: center;
         }
 
-        .header-buttons button {
-            background: var(--card-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        .header-buttons button:hover {
-            background: var(--accent-color);
-            color: #fff;
-        }
-
-        /* Navigation Menu */
         .nav-menu {
             display: flex;
             gap: 20px;
@@ -124,6 +107,9 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             transition: background 0.3s ease, color 0.3s ease;
         }
 
@@ -135,6 +121,13 @@
         .nav-menu button:hover:not(.active) {
             background: var(--accent-color);
             color: #fff;
+        }
+
+        /* Hide Text on Mobile and Show Icons Only */
+        @media (max-width: 768px) {
+            .nav-menu button span.text {
+                display: none;
+            }
         }
 
         /* Container Styles */
@@ -170,8 +163,6 @@
             padding: 20px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
             transition: background 0.3s ease, color 0.3s ease;
-            display: flex;
-            flex-direction: column;
         }
 
         .game-section p {
@@ -413,17 +404,10 @@
             }
 
             .nav-menu {
-                flex-direction: column;
+                flex-direction: row;
                 width: 100%;
                 gap: 10px;
-            }
-
-            .main-content {
-                flex-direction: column;
-            }
-
-            .game-section, .stats-section {
-                width: 100%;
+                overflow-x: auto;
             }
 
             .about-description img {
@@ -435,6 +419,11 @@
             .controls {
                 flex-direction: column;
                 align-items: flex-start;
+            }
+
+            .controls .reset-button {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
@@ -448,10 +437,19 @@
         </div>
         <div class="header-buttons">
             <div class="nav-menu">
-                <button id="playGameTab" class="active" onclick="switchTab('play')">Play Game</button>
-                <button id="aboutGameTab" onclick="switchTab('about')">About Game</button>
+                <button id="playGameTab" class="active" onclick="switchTab('play')">
+                    <i class="fas fa-play"></i>
+                    <span class="text">Play Game</span>
+                </button>
+                <button id="aboutGameTab" onclick="switchTab('about')">
+                    <i class="fas fa-info-circle"></i>
+                    <span class="text">About Game</span>
+                </button>
             </div>
-            <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark/Light Mode</button>
+            <button class="toggle-theme" onclick="toggleTheme()">
+                <i class="fas fa-adjust"></i>
+                <span class="text">Toggle Theme</span>
+            </button>
         </div>
     </div>
 
@@ -464,9 +462,15 @@
                 <p>Pick a plant to back and watch the race unfold!</p>
                 <div class="controls">
                     <div class="guess-buttons">
-                        <button class="plant1" onclick="selectGuess(1)">1</button>
-                        <button class="plant2" onclick="selectGuess(2)">2</button>
-                        <button class="plant3" onclick="selectGuess(3)">3</button>
+                        <button class="plant1" onclick="selectGuess(1)">
+                            <i class="fas fa-seedling"></i>
+                        </button>
+                        <button class="plant2" onclick="selectGuess(2)">
+                            <i class="fas fa-tree"></i>
+                        </button>
+                        <button class="plant3" onclick="selectGuess(3)">
+                            <i class="fas fa-leaf"></i>
+                        </button>
                     </div>
                     <button class="reset-button" onclick="resetGame()">Reset Game</button>
                 </div>
@@ -531,6 +535,9 @@
     <audio id="winSound" src="assets/win.mp3"></audio>
     <audio id="loseSound" src="assets/lose.mp3"></audio>
     <audio id="gameEndSound" src="assets/game-end.mp3"></audio>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         // Toggle Dark/Light Mode
@@ -909,32 +916,17 @@
             // Stop the timer
             clearInterval(gameTimer);
 
-            // Determine the best plant by considering survival and resources
-            let bestPlant = null;
-
-            if (!allDead) {
-                // Get all alive plants
-                const alivePlants = plants.filter(p => p.health > 0);
-                if (alivePlants.length > 0) {
-                    // Among alive plants, find the one with the most resources
-                    bestPlant = alivePlants.reduce((prev, current) => {
-                        return (current.resources_collected > prev.resources_collected) ? current : prev;
-                    }, alivePlants[0]);
+            // Determine the best plant by resources collected without mutating the original array
+            const bestPlant = plants.reduce((prev, current) => {
+                if (current.resources_collected > prev.resources_collected) {
+                    return current;
                 } else {
-                    // No alive plants, find the one with the most resources before death
-                    bestPlant = plants.reduce((prev, current) => {
-                        return (current.resources_collected > prev.resources_collected) ? current : prev;
-                    }, plants[0]);
+                    return prev;
                 }
-            } else {
-                // All plants dead, find the plant with the most resources
-                bestPlant = plants.reduce((prev, current) => {
-                    return (current.resources_collected > prev.resources_collected) ? current : prev;
-                }, plants[0]);
-            }
+            }, plants[0]);
 
             // Play appropriate sound
-            if (!allDead || timeUp) {
+            if (timeUp || !allDead) {
                 if (bestPlant.id === userGuess) {
                     playSound('win');
                 } else {
@@ -944,52 +936,43 @@
                 playSound('gameEnd');
             }
 
-            // Determine the popup message and confetti based on the game outcome
-            let popupMessage = '';
-            let popupIcon = 'info';
+            // Determine the message based on game outcome
+            let message = '';
             if (timeUp) {
-                popupMessage = `⏰ Time's up! Plant ${bestPlant.id} collected the most resources.`;
+                message = `⏰ Time's up! Plant ${bestPlant.id} collected the most resources.`;
             } else if (!allDead) {
                 // One plant survived
                 if (bestPlant.id === userGuess) {
-                    popupMessage = `🎉 Congratulations! Your chosen plant (Plant ${bestPlant.id}) outlasted the others and thrived the most!`;
-                    popupIcon = 'success';
+                    message = `🎉 Congratulations! Your chosen plant (Plant ${bestPlant.id}) outlasted the others and thrived the most!`;
                 } else {
-                    popupMessage = `Better luck next time! Plant ${bestPlant.id} was the ultimate survivor.`;
+                    message = `Better luck next time! Plant ${bestPlant.id} was the ultimate survivor.`;
                 }
             } else {
                 // All plants died
                 if (bestPlant.id === userGuess) {
-                    popupMessage = `💀 All plants perished! But Plant ${bestPlant.id}, your chosen one, collected the most resources before dying. Great guess!`;
+                    message = `💀 All plants perished! But Plant ${bestPlant.id}, your chosen one, collected the most resources before dying. Great guess!`;
                 } else {
-                    popupMessage = `💀 All plants died, but Plant ${bestPlant.id} managed to collect the most resources. Better luck next time!`;
+                    message = `💀 All plants died, but Plant ${bestPlant.id} managed to collect the most resources. Better luck next time!`;
                 }
             }
 
-            // Show SweetAlert2 popup with confetti
+            // Show SweetAlert2 Popup
             Swal.fire({
                 title: 'Game Over',
-                text: popupMessage,
-                icon: popupIcon,
-                background: document.body.classList.contains('dark-mode') ? '#161B22' : '#ffffff',
-                color: document.body.classList.contains('dark-mode') ? '#C9D1D9' : '#333333',
+                text: message,
+                icon: (bestPlant.id === userGuess) ? 'success' : 'warning',
+                background: (document.body.classList.contains('dark-mode')) ? '#161B22' : '#ffffff',
+                color: (document.body.classList.contains('dark-mode')) ? '#C9D1D9' : '#333333',
                 confirmButtonColor: '#4CAF50',
                 didOpen: () => {
-                    // Trigger confetti if player won
-                    if (bestPlant.id === userGuess && (!allDead || timeUp)) {
-                        confetti({
-                            particleCount: 150,
-                            spread: 70,
-                            origin: { y: 0.6 },
-                            colors: ['#7B68EE', '#FF1493', '#FFA500', '#4CAF50'],
-                            scalar: 1.2
-                        });
-                    }
+                    // Launch confetti
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
                 }
             });
-
-            // Do not reset automatically
-            // Allow the user to see results and reset manually
         }
 
         // Disable/Enable Plant Selection Buttons
@@ -1106,7 +1089,6 @@
                 aboutGame.style.display = 'flex';
             }
         }
-
     </script>
 </body>
 </html>
