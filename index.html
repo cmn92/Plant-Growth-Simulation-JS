@@ -12,6 +12,8 @@
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         /* Root Variables */
         :root {
@@ -62,7 +64,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
+            padding: 10px 20px;
             background: var(--card-bg);
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             position: sticky;
@@ -84,50 +86,34 @@
 
         .header h1 {
             margin: 0;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             color: var(--heading-color);
         }
 
         .header-buttons {
             display: flex;
-            gap: 10px;
             align-items: center;
-        }
-
-        .header-buttons button {
-            background: var(--card-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        .header-buttons button:hover {
-            background: var(--accent-color);
-            color: #fff;
+            gap: 15px;
         }
 
         /* Navigation Menu */
         .nav-menu {
             display: flex;
-            gap: 20px;
+            gap: 15px;
         }
 
         .nav-menu button {
             background: var(--card-bg);
             color: var(--text-color);
             border: 1px solid var(--border-color);
-            padding: 10px 20px;
+            padding: 8px 12px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 1rem;
-            transition: background 0.3s ease, color 0.3s ease;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
             gap: 5px;
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         .nav-menu button.active {
@@ -136,6 +122,26 @@
         }
 
         .nav-menu button:hover:not(.active) {
+            background: var(--accent-color);
+            color: #fff;
+        }
+
+        /* Toggle Theme Button */
+        .toggle-theme {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .toggle-theme:hover {
             background: var(--accent-color);
             color: #fff;
         }
@@ -160,7 +166,11 @@
                 flex-direction: row;
             }
 
-            .game-section, .stats-section {
+            .game-section {
+                flex: 2;
+            }
+
+            .stats-section {
                 flex: 1;
             }
         }
@@ -173,6 +183,9 @@
             padding: 20px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
             transition: background 0.3s ease, color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .game-section p {
@@ -187,7 +200,7 @@
             flex-wrap: wrap;
             align-items: center;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         .guess-buttons {
@@ -196,20 +209,16 @@
         }
 
         .guess-buttons button {
-            background: var(--card-bg);
-            border: none;
-            padding: 0;
-            border-radius: 50%; /* Circular buttons */
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%; /* Circular buttons */
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
         }
 
         /* Specific Button Background Images */
@@ -290,19 +299,23 @@
         .stat-item img {
             width: 40px;
             height: 40px;
-            border-radius: 5px;
             object-fit: cover;
+            border-radius: 5px;
         }
 
-        .stat-item .label {
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .stat-details {
             flex: 1;
         }
 
-        .stat-item .label span.choice-indicator {
+        .stat-details .label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-details .label span.choice-indicator {
             font-size: 1rem;
             color: var(--accent-color);
         }
@@ -313,7 +326,6 @@
             border-radius: 5px;
             overflow: hidden;
             height: 20px;
-            margin-top: 5px;
         }
 
         .progress {
@@ -374,7 +386,7 @@
         .about-description img {
             width: 60px;
             height: 50px;
-            border-radius: 5px;
+            border-radius: 3px;
             object-fit: cover;
         }
 
@@ -404,7 +416,11 @@
                 flex-direction: row;
             }
 
-            .game-section, .stats-section {
+            .game-section {
+                flex: 2;
+            }
+
+            .stats-section {
                 flex: 1;
             }
         }
@@ -433,41 +449,54 @@
             }
 
             .nav-menu button {
-                padding: 8px 12px;
-                font-size: 0.9rem;
                 flex: 1;
-                display: flex;
-                align-items: center;
                 justify-content: center;
-                gap: 5px;
+                padding: 8px 0;
             }
 
-            .nav-menu button .icon-text {
-                display: none;
+            .toggle-theme {
+                padding: 8px;
+                font-size: 1rem;
             }
 
-            .nav-menu button .icon-only {
-                display: inline;
+            /* Ensure Reset Game button is visible on mobile */
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
             }
 
             .guess-buttons {
-                justify-content: center;
+                width: 100%;
+                justify-content: space-between;
             }
 
-            .controls {
+            .guess-buttons button {
+                width: 30%;
+                height: 60px;
+                border-radius: 10px;
+                background-size: contain;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+
+            .reset-button {
+                width: 100%;
+                text-align: center;
+            }
+
+            /* Real-Time Stats */
+            .stat-item {
                 flex-direction: column;
-                align-items: center;
+                align-items: flex-start;
             }
 
-            .about-description img {
+            .stat-item img {
                 width: 50px;
                 height: 50px;
             }
 
-            /* Ensure Reset Game button is visible */
-            .reset-button {
+            .stat-details {
                 width: 100%;
-                text-align: center;
             }
         }
     </style>
@@ -482,17 +511,17 @@
         <div class="header-buttons">
             <div class="nav-menu">
                 <button id="playGameTab" class="active" onclick="switchTab('play')">
-                    <i class="fas fa-gamepad icon-only"></i>
-                    <span class="icon-text">Play Game</span>
+                    <i class="fas fa-play-circle"></i>
+                    <span class="nav-text">Play Game</span>
                 </button>
                 <button id="aboutGameTab" onclick="switchTab('about')">
-                    <i class="fas fa-info-circle icon-only"></i>
-                    <span class="icon-text">About Game</span>
+                    <i class="fas fa-info-circle"></i>
+                    <span class="nav-text">About Game</span>
                 </button>
             </div>
             <button class="toggle-theme" onclick="toggleTheme()">
-                <i class="fas fa-moon icon-only"></i>
-                <span class="icon-text">Toggle Dark/Light</span>
+                <i class="fas fa-adjust"></i>
+                <span class="nav-text">Toggle Theme</span>
             </button>
         </div>
     </div>
@@ -506,9 +535,9 @@
                 <p>Pick a plant to back and watch the race unfold!</p>
                 <div class="controls">
                     <div class="guess-buttons">
-                        <button class="plant1" onclick="selectGuess(1)"></button>
-                        <button class="plant2" onclick="selectGuess(2)"></button>
-                        <button class="plant3" onclick="selectGuess(3)"></button>
+                        <button class="plant1" onclick="selectGuess(1)" title="Plant 1"></button>
+                        <button class="plant2" onclick="selectGuess(2)" title="Plant 2"></button>
+                        <button class="plant3" onclick="selectGuess(3)" title="Plant 3"></button>
                     </div>
                     <button class="reset-button" onclick="resetGame()">Reset Game</button>
                 </div>
@@ -574,14 +603,23 @@
     <audio id="loseSound" src="assets/lose.mp3"></audio>
     <audio id="gameEndSound" src="assets/game-end.mp3"></audio>
 
-    <!-- SweetAlert2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         // Toggle Dark/Light Mode
         function toggleTheme() {
             document.body.classList.toggle('dark-mode');
             const isDarkMode = document.body.classList.contains('dark-mode');
             localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+
+            // Update SweetAlert2 theme
+            Swal.fire({
+                title: 'Theme Changed!',
+                text: isDarkMode ? 'Dark mode enabled.' : 'Light mode enabled.',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                background: isDarkMode ? '#161B22' : '#ffffff',
+                color: isDarkMode ? '#C9D1D9' : '#333333',
+                iconColor: isDarkMode ? '#58A6FF' : '#4CAF50'
+            });
         }
 
         // Apply theme based on saved preference
@@ -675,7 +713,7 @@
         // Resize Canvas Function
         function resizeCanvas() {
             const containerWidth = canvas.parentElement.clientWidth;
-            const containerHeight = window.innerHeight * 0.6; // Adjust as needed
+            const containerHeight = window.innerHeight * 0.5; // Adjust as needed
 
             canvas.width = containerWidth;
             canvas.height = containerHeight;
@@ -789,9 +827,6 @@
                 if (gameDuration > 0) {
                     gameDuration--;
                     updateRealTimeInfo();
-                } else if (gameDuration === 0 && !gameEnded) {
-                    gameEnded = true;
-                    endGame(false, true); // false for not all dead, true for time up
                 }
             }, 1000);
         }
@@ -930,7 +965,7 @@
                 infoDiv.innerHTML += `
                     <div class="stat-item">
                         <img src="assets/plant${plant.id}.png" alt="Plant ${plant.id}">
-                        <div>
+                        <div class="stat-details">
                             <div class="label">Plant ${plant.id} ${choiceIndicator}</div>
                             <div class="progress-bar">
                                 <div class="progress ${healthClass}" style="width: ${healthPercentage}%"></div>
@@ -945,8 +980,8 @@
             const timePercentage = Math.max(0, (gameDuration / 120) * 100);
             infoDiv.innerHTML += `
                 <div class="stat-item">
-                    <img src="assets/sunlight.png" alt="Time">
-                    <div>
+                    <img src="assets/time.png" alt="Time Left">
+                    <div class="stat-details">
                         <div class="label"><span class="time-display">⏱️ Time Left</span></div>
                         <div class="progress-bar">
                             <div class="progress healthy" style="width: ${timePercentage}%"></div>
@@ -962,17 +997,20 @@
             // Stop the timer
             clearInterval(gameTimer);
 
-            // Determine the best plant by resources collected and survival
-            let survivingPlants = plants.filter(plant => plant.health > 0);
-            let bestPlant;
+            // Determine the best plant by resources collected without mutating the original array
+            let bestPlant = null;
+            if (!allDead) {
+                // Prioritize surviving plants
+                const survivingPlants = plants.filter(p => p.health > 0);
+                if (survivingPlants.length > 0) {
+                    bestPlant = survivingPlants.reduce((prev, current) => {
+                        return (current.resources_collected > prev.resources_collected) ? current : prev;
+                    }, survivingPlants[0]);
+                }
+            }
 
-            if (survivingPlants.length > 0) {
-                // If there are surviving plants, choose the one with the highest resources
-                bestPlant = survivingPlants.reduce((prev, current) => {
-                    return (current.resources_collected > prev.resources_collected) ? current : prev;
-                }, survivingPlants[0]);
-            } else {
-                // If no plants survived, choose the one with the highest resources before dying
+            if (!bestPlant) {
+                // If no plants are alive, choose the one with highest resources before dying
                 bestPlant = plants.reduce((prev, current) => {
                     return (current.resources_collected > prev.resources_collected) ? current : prev;
                 }, plants[0]);
@@ -989,32 +1027,32 @@
                 playSound('gameEnd');
             }
 
-            // Trigger Confetti and SweetAlert2 popup
-            if (bestPlant.health > 0) {
-                // If the best plant is still alive (win condition)
-                confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 },
-                    colors: ['#ff0a54', '#ff477e', '#ff85a1', '#fbb1bd', '#f9bec7']
-                });
-            }
-
-            // Configure SweetAlert2 based on theme
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            Swal.fire({
-                title: bestPlant.id === userGuess ? '🎉 Congratulations!' : '🏆 Winner!',
-                text: bestPlant.id === userGuess 
-                    ? `Your chosen plant (Plant ${bestPlant.id}) won the race with ${bestPlant.resources_collected} resources!`
-                    : `Plant ${bestPlant.id} won the race with ${bestPlant.resources_collected} resources.`,
-                icon: bestPlant.id === userGuess ? 'success' : 'info',
-                background: isDarkMode ? '#30363D' : '#fff',
-                color: isDarkMode ? '#C9D1D9' : '#333',
-                confirmButtonColor: isDarkMode ? '#58A6FF' : '#4CAF50',
+            // Trigger confetti during SweetAlert2 popup
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#a864fd', '#29cdff', '#78ff44']
             });
 
-            // Disable plant selection buttons after game ends
-            disablePlantSelection(true);
+            // Configure SweetAlert2 theme
+            const isDarkMode = document.body.classList.contains('dark-mode');
+
+            Swal.fire({
+                title: timeUp ? '⏰ Time\'s up!' : allDead ? '💀 All Plants Perished!' : '🎉 Congratulations!',
+                html: timeUp || (!allDead && bestPlant.health > 0) ? 
+                    bestPlant.id === userGuess ? 
+                        `<p>Your chosen Plant <strong>${bestPlant.id}</strong> collected the most resources!</p>` :
+                        `<p>Plant <strong>${bestPlant.id}</strong> collected the most resources!</p>` :
+                    bestPlant.id === userGuess ? 
+                        `<p>All plants perished, but your chosen Plant <strong>${bestPlant.id}</strong> collected the most resources before dying.</p>` :
+                        `<p>All plants perished, but Plant <strong>${bestPlant.id}</strong> collected the most resources.</p>`,
+                icon: timeUp || (!allDead && bestPlant.health > 0) ? (bestPlant.id === userGuess ? 'success' : 'info') : 'error',
+                confirmButtonText: 'OK',
+                background: isDarkMode ? '#161B22' : '#ffffff',
+                color: isDarkMode ? '#C9D1D9' : '#333333',
+                iconColor: isDarkMode ? '#58A6FF' : '#4CAF50'
+            });
         }
 
         // Disable/Enable Plant Selection Buttons
@@ -1131,9 +1169,6 @@
                 aboutGame.style.display = 'flex';
             }
         }
-
-        // Start Game Timer when User Selects a Plant
-        // Initialization is already handled in selectGuess()
     </script>
 </body>
 </html>
