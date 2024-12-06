@@ -85,6 +85,7 @@
         .header-buttons {
             display: flex;
             gap: 10px;
+            align-items: center;
         }
 
         .header-buttons button {
@@ -107,8 +108,6 @@
         .nav-menu {
             display: flex;
             gap: 20px;
-            justify-content: center;
-            margin-top: 10px;
         }
 
         .nav-menu button {
@@ -151,6 +150,10 @@
             .main-content {
                 flex-direction: row;
             }
+
+            .game-section, .stats-section {
+                flex: 1;
+            }
         }
 
         .game-section, .stats-section {
@@ -162,12 +165,6 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        @media (min-width: 1025px) {
-            .game-section, .stats-section {
-                flex: 1;
-            }
-        }
-
         h3 {
             margin-top: 0;
             font-size: 1.4rem;
@@ -176,18 +173,17 @@
 
         .description {
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             margin: 15px 0;
-            gap: 15px;
         }
 
         .description img {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
             border-radius: 5px;
         }
 
-        /* Game Canvas */
         canvas {
             border: 2px solid var(--border-color);
             border-radius: 10px;
@@ -197,21 +193,20 @@
             height: auto;
             max-width: 100%;
             max-height: 400px;
-            margin-top: 20px;
+            margin-top: 20px; /* Reduced spacing above canvas */
         }
 
         /* Plant Selection and Reset Buttons */
         .controls {
             display: flex;
             align-items: center;
-            flex-wrap: wrap;
             gap: 10px;
-            margin-top: 10px;
+            flex-wrap: wrap;
         }
 
         .guess-buttons {
             display: flex;
-            gap: 15px;
+            gap: 20px; /* Increased spacing between buttons */
         }
 
         .guess-buttons button {
@@ -219,7 +214,7 @@
             color: #fff;
             border: none;
             padding: 15px;
-            border-radius: 50%;
+            border-radius: 50%; /* Circular buttons */
             cursor: pointer;
             font-size: 1rem;
             transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
@@ -259,7 +254,6 @@
             cursor: pointer;
             font-size: 1rem;
             transition: background 0.3s ease, color 0.3s ease;
-            flex-shrink: 0;
         }
 
         .reset-button:hover {
@@ -274,15 +268,12 @@
         }
 
         .stat-item {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .stat-item .label {
             font-weight: 500;
             margin-bottom: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         .progress-bar {
@@ -310,11 +301,45 @@
 
         /* Time Display Styling */
         .time-display {
+            font-weight: 500;
+            margin-top: 10px;
             display: flex;
             align-items: center;
             gap: 5px;
-            font-weight: 500;
-            margin-top: 10px;
+        }
+
+        /* About Game Section Styles */
+        .about-section {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .about-section.active {
+            display: flex;
+        }
+
+        .about-section h3 {
+            margin-top: 0;
+            font-size: 1.6rem;
+            color: var(--heading-color);
+        }
+
+        .about-section .description {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .about-section .description img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+        }
+
+        .about-section p {
+            margin: 0;
+            line-height: 1.5;
         }
 
         /* Scrollbar Styling for Stats Section */
@@ -353,8 +378,15 @@
 
             .reset-button {
                 width: 100%;
-                text-align: center;
             }
+        }
+
+        /* Disable Plant Selection Buttons */
+        .guess-buttons button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+            box-shadow: none;
+            transform: none;
         }
     </style>
 </head>
@@ -366,9 +398,9 @@
             <h1>Plant Growth Game</h1>
         </div>
         <div class="header-buttons">
+            <button onclick="switchTab('play')" id="playGameTab" class="active">Play Game</button>
+            <button onclick="switchTab('about')" id="aboutGameTab">About Game</button>
             <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark/Light Mode</button>
-            <button class="nav-menu-button active" onclick="switchTab('play')">Play Game</button>
-            <button class="nav-menu-button" onclick="switchTab('about')">About Game</button>
         </div>
     </div>
 
@@ -400,44 +432,42 @@
         </div>
 
         <!-- About Game Tab Content -->
-        <div id="aboutGame" class="main-content" style="display: none;">
-            <div class="about-section">
-                <h3>About the Plants</h3>
-                <div class="description">
-                    <img src="assets/plant1.png" alt="Plant 1">
-                    <p><strong>Plant 1:</strong> Extremely fast growth, but average resilience and efficiency.</p>
-                </div>
-                <div class="description">
-                    <img src="assets/plant2.png" alt="Plant 2">
-                    <p><strong>Plant 2:</strong> Tough and resilient, hazards barely faze it, though it's slower.</p>
-                </div>
-                <div class="description">
-                    <img src="assets/plant3.png" alt="Plant 3">
-                    <p><strong>Plant 3:</strong> Highly efficient at using resources, thrives with less input.</p>
-                </div>
-
-                <h3>About Resources</h3>
-                <div class="description">
-                    <img src="assets/sunlight.png" alt="Sunlight">
-                    <p><strong>Sunlight:</strong> Abundant in upper regions. Greatly boosts plant health.</p>
-                </div>
-                <div class="description">
-                    <img src="assets/water.png" alt="Water">
-                    <p><strong>Water:</strong> Located lower down. Provides moderate but steady health gains.</p>
-                </div>
-                <p>Collecting these resources replenishes health and allows plants to survive longer.</p>
-
-                <h3>About Hazards</h3>
-                <div class="description">
-                    <img src="assets/hazard.png" alt="Biotic Stress">
-                    <p><strong>Biotic Stress (Moving Hazard):</strong> Drifts around the field, harming plants that get too close.</p>
-                </div>
-                <div class="description">
-                    <img src="assets/hazard2.png" alt="Environmental Stress">
-                    <p><strong>Environmental Stress (Static Hazard):</strong> Stationary but dangerous. Getting near it drains plant health.</p>
-                </div>
-                <p>Some plants are more resilient and lose less health when encountering these threats. Choose wisely!</p>
+        <div id="aboutGame" class="about-section">
+            <h3>About the Plants</h3>
+            <div class="description">
+                <img src="assets/plant1.png" alt="Plant 1">
+                <p><strong>Plant 1:</strong> Extremely fast growth, but average resilience and efficiency.</p>
             </div>
+            <div class="description">
+                <img src="assets/plant2.png" alt="Plant 2">
+                <p><strong>Plant 2:</strong> Tough and resilient, hazards barely faze it, though it's slower.</p>
+            </div>
+            <div class="description">
+                <img src="assets/plant3.png" alt="Plant 3">
+                <p><strong>Plant 3:</strong> Highly efficient at using resources, thrives with less input.</p>
+            </div>
+
+            <h3>About Resources</h3>
+            <div class="description">
+                <img src="assets/sunlight.png" alt="Sunlight">
+                <p><strong>Sunlight:</strong> Abundant in upper regions. Greatly boosts plant health.</p>
+            </div>
+            <div class="description">
+                <img src="assets/water.png" alt="Water">
+                <p><strong>Water:</strong> Located lower down. Provides moderate but steady health gains.</p>
+            </div>
+            <p>Collecting these resources replenishes health and allows plants to survive longer.</p>
+
+            <h3>About Hazards</h3>
+            <div class="description">
+                <img src="assets/hazard.png" alt="Biotic Stress">
+                <p><strong>Biotic Stress (Moving Hazard):</strong> Drifts around the field, harming plants that get too close.</p>
+            </div>
+            <div class="description">
+                <img src="assets/hazard2.png" alt="Environmental Stress">
+                <p><strong>Environmental Stress (Static Hazard):</strong> Stationary but dangerous. Getting near it drains plant health.</p>
+            </div>
+            <p>Some plants are more resilient and lose less health when encountering these threats. Choose wisely!</p>
         </div>
     </div>
 
@@ -467,10 +497,10 @@
             resizeCanvas();
         };
 
-        // Navigation Menu Button Classes
+        // Tab Switching Functionality
         function switchTab(tab) {
-            const playGameTab = document.querySelector('.nav-menu-button:nth-child(1)');
-            const aboutGameTab = document.querySelector('.nav-menu-button:nth-child(2)');
+            const playGameTab = document.getElementById('playGameTab');
+            const aboutGameTab = document.getElementById('aboutGameTab');
             const playGame = document.getElementById('playGame');
             const aboutGame = document.getElementById('aboutGame');
 
@@ -652,6 +682,9 @@
                     color: 'var(--color-plant3)'
                 }
             ];
+
+            // Enable plant selection buttons
+            disablePlantSelection(false);
         }
 
         // Start Game Timer
@@ -808,11 +841,11 @@
             // Display remaining time
             infoDiv.innerHTML += `
                 <div class="stat-item">
-                    <div class="label">Time Left</div>
+                    <div class="label">⏱️ Time Left</div>
                     <div class="progress-bar">
                         <div class="progress healthy" style="width: ${Math.max(0, (gameDuration / 120) * 100)}%"></div>
                     </div>
-                    <div class="time-display">⏱️ Time Left: ${gameDuration} seconds</div>
+                    <div class="resources">${gameDuration} seconds</div>
                 </div>
             `;
         }
@@ -854,14 +887,14 @@
                         alert(`💀 All plants died, but Plant ${bestPlant.id} managed to collect the most resources. Better luck next time!`);
                     }
                 }
-                // Removed resetGame() from here to prevent automatic reset
+                // Do not reset the game automatically
             }, 200);
 
             // Disable plant selection buttons after game ends
             disablePlantSelection(true);
         }
 
-        // Function to Disable/Enable Plant Selection Buttons
+        // Disable/Enable Plant Selection Buttons
         function disablePlantSelection(disable) {
             const buttons = document.querySelectorAll('.guess-buttons button');
             buttons.forEach(button => {
@@ -891,6 +924,13 @@
 
             // Re-enable plant selection buttons
             disablePlantSelection(false);
+
+            // Reinitialize the game only if a plant is selected
+            if (userGuess !== null) {
+                initializeGame();
+                gameLoop();
+                startTimer();
+            }
 
             // Switch back to Play Game tab
             switchTab('play');
@@ -958,8 +998,8 @@
 
         // Initialize Game on Tab Switch if Images are Loaded
         function switchTab(tab) {
-            const playGameTab = document.querySelector('.nav-menu-button:nth-child(1)');
-            const aboutGameTab = document.querySelector('.nav-menu-button:nth-child(2)');
+            const playGameTab = document.getElementById('playGameTab');
+            const aboutGameTab = document.getElementById('aboutGameTab');
             const playGame = document.getElementById('playGame');
             const aboutGame = document.getElementById('aboutGame');
 
