@@ -156,7 +156,8 @@
             }
         }
 
-        .game-section, .stats-section {
+        /* Game Section Styles */
+        .game-section {
             background: var(--card-bg);
             color: var(--text-color);
             border-radius: 8px;
@@ -165,48 +166,24 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        h3 {
+        .game-section p {
             margin-top: 0;
-            font-size: 1.4rem;
-            color: var(--heading-color);
+            font-size: 1.2rem;
+            font-weight: 500;
         }
 
-        .description {
-            display: flex;
-            align-items: center;
-            margin: 15px 0;
-        }
-
-        .description img {
-            width: 40px;
-            height: 40px;
-            margin-right: 15px;
-            border-radius: 5px;
-        }
-
-        canvas {
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--card-bg), var(--bg-color));
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            height: auto;
-            max-width: 100%;
-            max-height: 400px;
-            margin-top: 20px; /* Reduced spacing above canvas */
-        }
-
-        /* Plant Selection and Reset Buttons */
+        /* Controls (Plant Buttons and Reset) */
         .controls {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             gap: 10px;
-            flex-wrap: wrap;
+            margin-top: 20px;
         }
 
         .guess-buttons {
             display: flex;
-            gap: 20px; /* Increased spacing between buttons */
+            gap: 15px;
         }
 
         .guess-buttons button {
@@ -218,8 +195,8 @@
             cursor: pointer;
             font-size: 1rem;
             transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
-            width: 70px;
-            height: 70px;
+            width: 60px;
+            height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -261,19 +238,52 @@
             color: #fff;
         }
 
+        /* Canvas Styles */
+        canvas {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--card-bg), var(--bg-color));
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            max-height: 400px;
+            margin-top: 20px;
+        }
+
         /* Real-Time Statistics Styles */
         .stats-section {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+            transition: background 0.3s ease, color 0.3s ease;
             max-height: 80vh;
             overflow-y: auto;
         }
 
+        .stats-section h3 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            color: var(--heading-color);
+        }
+
         .stat-item {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .stat-item .label {
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-item .label span.choice-indicator {
+            font-size: 1rem;
+            color: var(--accent-color);
         }
 
         .progress-bar {
@@ -282,7 +292,6 @@
             border-radius: 5px;
             overflow: hidden;
             height: 20px;
-            margin-top: 5px;
         }
 
         .progress {
@@ -299,16 +308,23 @@
             background-color: #f44336;
         }
 
-        /* Time Display Styling */
+        /* Resources Collected */
+        .resources {
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: var(--heading-color);
+        }
+
+        /* Time Display */
         .time-display {
-            font-weight: 500;
-            margin-top: 10px;
             display: flex;
             align-items: center;
             gap: 5px;
+            font-weight: 600;
+            color: var(--heading-color);
         }
 
-        /* About Game Section Styles */
+        /* About Game Section */
         .about-section {
             display: none;
             flex-direction: column;
@@ -320,26 +336,28 @@
         }
 
         .about-section h3 {
-            margin-top: 0;
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             color: var(--heading-color);
+            margin-bottom: 10px;
         }
 
-        .about-section .description {
+        .about-description {
             display: flex;
             align-items: center;
             gap: 15px;
         }
 
-        .about-section .description img {
+        .about-description img {
             width: 60px;
             height: 60px;
             border-radius: 8px;
+            object-fit: cover;
         }
 
-        .about-section p {
+        .about-description p {
             margin: 0;
-            line-height: 1.5;
+            font-size: 1rem;
+            line-height: 1.4;
         }
 
         /* Scrollbar Styling for Stats Section */
@@ -357,6 +375,26 @@
         }
 
         /* Responsive Adjustments */
+        @media (min-width: 1025px) {
+            .main-content {
+                flex-direction: row;
+            }
+
+            .game-section, .stats-section {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .game-section, .stats-section {
+                width: 100%;
+            }
+        }
+
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -366,6 +404,7 @@
             .nav-menu {
                 flex-direction: column;
                 width: 100%;
+                gap: 10px;
             }
 
             .main-content {
@@ -376,17 +415,10 @@
                 width: 100%;
             }
 
-            .reset-button {
-                width: 100%;
+            .about-description img {
+                width: 50px;
+                height: 50px;
             }
-        }
-
-        /* Disable Plant Selection Buttons */
-        .guess-buttons button:disabled {
-            cursor: not-allowed;
-            opacity: 0.6;
-            box-shadow: none;
-            transform: none;
         }
     </style>
 </head>
@@ -398,8 +430,10 @@
             <h1>Plant Growth Game</h1>
         </div>
         <div class="header-buttons">
-            <button onclick="switchTab('play')" id="playGameTab" class="active">Play Game</button>
-            <button onclick="switchTab('about')" id="aboutGameTab">About Game</button>
+            <div class="nav-menu">
+                <button id="playGameTab" class="active" onclick="switchTab('play')">Play Game</button>
+                <button id="aboutGameTab" onclick="switchTab('about')">About Game</button>
+            </div>
             <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark/Light Mode</button>
         </div>
     </div>
@@ -433,37 +467,40 @@
 
         <!-- About Game Tab Content -->
         <div id="aboutGame" class="about-section">
+            <!-- About Plants -->
             <h3>About the Plants</h3>
-            <div class="description">
+            <div class="about-description">
                 <img src="assets/plant1.png" alt="Plant 1">
                 <p><strong>Plant 1:</strong> Extremely fast growth, but average resilience and efficiency.</p>
             </div>
-            <div class="description">
+            <div class="about-description">
                 <img src="assets/plant2.png" alt="Plant 2">
                 <p><strong>Plant 2:</strong> Tough and resilient, hazards barely faze it, though it's slower.</p>
             </div>
-            <div class="description">
+            <div class="about-description">
                 <img src="assets/plant3.png" alt="Plant 3">
                 <p><strong>Plant 3:</strong> Highly efficient at using resources, thrives with less input.</p>
             </div>
 
+            <!-- About Resources -->
             <h3>About Resources</h3>
-            <div class="description">
+            <div class="about-description">
                 <img src="assets/sunlight.png" alt="Sunlight">
                 <p><strong>Sunlight:</strong> Abundant in upper regions. Greatly boosts plant health.</p>
             </div>
-            <div class="description">
+            <div class="about-description">
                 <img src="assets/water.png" alt="Water">
                 <p><strong>Water:</strong> Located lower down. Provides moderate but steady health gains.</p>
             </div>
             <p>Collecting these resources replenishes health and allows plants to survive longer.</p>
 
+            <!-- About Hazards -->
             <h3>About Hazards</h3>
-            <div class="description">
+            <div class="about-description">
                 <img src="assets/hazard.png" alt="Biotic Stress">
                 <p><strong>Biotic Stress (Moving Hazard):</strong> Drifts around the field, harming plants that get too close.</p>
             </div>
-            <div class="description">
+            <div class="about-description">
                 <img src="assets/hazard2.png" alt="Environmental Stress">
                 <p><strong>Environmental Stress (Static Hazard):</strong> Stationary but dangerous. Getting near it drains plant health.</p>
             </div>
@@ -603,6 +640,7 @@
                 initializeGame();
                 gameLoop();
                 startTimer();
+                disablePlantSelection(true);
             }
         }
 
@@ -682,9 +720,6 @@
                     color: 'var(--color-plant3)'
                 }
             ];
-
-            // Enable plant selection buttons
-            disablePlantSelection(false);
         }
 
         // Start Game Timer
@@ -827,9 +862,10 @@
                     ? `Health: ${healthPercentage.toFixed(1)}%, Resources: ${plant.resources_collected}`
                     : 'Dead';
                 const healthClass = healthPercentage > 50 ? 'healthy' : 'low-health';
+                const choiceIndicator = (plant.id === userGuess) ? '<span class="choice-indicator">*Your choice</span>' : '';
                 infoDiv.innerHTML += `
                     <div class="stat-item">
-                        <div class="label">Plant ${plant.id}</div>
+                        <div class="label">Plant ${plant.id} ${choiceIndicator}</div>
                         <div class="progress-bar">
                             <div class="progress ${healthClass}" style="width: ${healthPercentage}%"></div>
                         </div>
@@ -839,11 +875,12 @@
             });
 
             // Display remaining time
+            const timePercentage = Math.max(0, (gameDuration / 120) * 100);
             infoDiv.innerHTML += `
                 <div class="stat-item">
-                    <div class="label">⏱️ Time Left</div>
+                    <div class="label"><span class="time-display">⏱️ Time Left</span></div>
                     <div class="progress-bar">
-                        <div class="progress healthy" style="width: ${Math.max(0, (gameDuration / 120) * 100)}%"></div>
+                        <div class="progress healthy" style="width: ${timePercentage}%"></div>
                     </div>
                     <div class="resources">${gameDuration} seconds</div>
                 </div>
@@ -887,7 +924,7 @@
                         alert(`💀 All plants died, but Plant ${bestPlant.id} managed to collect the most resources. Better luck next time!`);
                     }
                 }
-                // Do not reset the game automatically
+                // Do not reset automatically
             }, 200);
 
             // Disable plant selection buttons after game ends
@@ -925,14 +962,7 @@
             // Re-enable plant selection buttons
             disablePlantSelection(false);
 
-            // Reinitialize the game only if a plant is selected
-            if (userGuess !== null) {
-                initializeGame();
-                gameLoop();
-                startTimer();
-            }
-
-            // Switch back to Play Game tab
+            // Optionally, switch back to Play Game tab
             switchTab('play');
         }
 
@@ -1015,6 +1045,10 @@
                 aboutGame.style.display = 'flex';
             }
         }
+
+        // Start Game Timer when User Selects a Plant
+        // Initialization is already handled in selectGuess()
+
     </script>
 </body>
 </html>
