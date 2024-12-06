@@ -94,6 +94,23 @@
             align-items: center;
         }
 
+        .header-buttons button {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .header-buttons button:hover {
+            background: var(--accent-color);
+            color: #fff;
+        }
+
+        /* Navigation Menu */
         .nav-menu {
             display: flex;
             gap: 20px;
@@ -107,10 +124,10 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 1rem;
+            transition: background 0.3s ease, color 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: background 0.3s ease, color 0.3s ease;
+            gap: 5px;
         }
 
         .nav-menu button.active {
@@ -121,13 +138,6 @@
         .nav-menu button:hover:not(.active) {
             background: var(--accent-color);
             color: #fff;
-        }
-
-        /* Hide Text on Mobile and Show Icons Only */
-        @media (max-width: 768px) {
-            .nav-menu button span.text {
-                display: none;
-            }
         }
 
         /* Container Styles */
@@ -186,32 +196,33 @@
         }
 
         .guess-buttons button {
-            background: var(--accent-color);
-            color: #fff;
+            background: var(--card-bg);
             border: none;
-            padding: 15px;
+            padding: 0;
             border-radius: 50%; /* Circular buttons */
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 0.9rem;
             transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
             width: 60px;
             height: 60px;
             display: flex;
             align-items: center;
             justify-content: center;
+            background-size: cover;
+            background-position: center;
         }
 
-        /* Specific Button Colors */
+        /* Specific Button Background Images */
         .plant1 {
-            background: var(--color-plant1); /* Purple */
+            background-image: url('assets/plant1.png');
         }
 
         .plant2 {
-            background: var(--color-plant2); /* Dark Pink */
+            background-image: url('assets/plant2.png');
         }
 
         .plant3 {
-            background: var(--color-plant3); /* Orange */
+            background-image: url('assets/plant3.png');
         }
 
         .guess-buttons button:hover {
@@ -271,14 +282,24 @@
 
         .stat-item {
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stat-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            object-fit: cover;
         }
 
         .stat-item .label {
             font-weight: 600;
-            margin-bottom: 5px;
             display: flex;
             align-items: center;
             gap: 5px;
+            flex: 1;
         }
 
         .stat-item .label span.choice-indicator {
@@ -292,6 +313,7 @@
             border-radius: 5px;
             overflow: hidden;
             height: 20px;
+            margin-top: 5px;
         }
 
         .progress {
@@ -352,7 +374,7 @@
         .about-description img {
             width: 60px;
             height: 50px;
-            border-radius: 3px;
+            border-radius: 5px;
             object-fit: cover;
         }
 
@@ -407,7 +429,34 @@
                 flex-direction: row;
                 width: 100%;
                 gap: 10px;
-                overflow-x: auto;
+                justify-content: space-between;
+            }
+
+            .nav-menu button {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+            }
+
+            .nav-menu button .icon-text {
+                display: none;
+            }
+
+            .nav-menu button .icon-only {
+                display: inline;
+            }
+
+            .guess-buttons {
+                justify-content: center;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: center;
             }
 
             .about-description img {
@@ -416,12 +465,7 @@
             }
 
             /* Ensure Reset Game button is visible */
-            .controls {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .controls .reset-button {
+            .reset-button {
                 width: 100%;
                 text-align: center;
             }
@@ -438,17 +482,17 @@
         <div class="header-buttons">
             <div class="nav-menu">
                 <button id="playGameTab" class="active" onclick="switchTab('play')">
-                    <i class="fas fa-play"></i>
-                    <span class="text">Play Game</span>
+                    <i class="fas fa-gamepad icon-only"></i>
+                    <span class="icon-text">Play Game</span>
                 </button>
                 <button id="aboutGameTab" onclick="switchTab('about')">
-                    <i class="fas fa-info-circle"></i>
-                    <span class="text">About Game</span>
+                    <i class="fas fa-info-circle icon-only"></i>
+                    <span class="icon-text">About Game</span>
                 </button>
             </div>
             <button class="toggle-theme" onclick="toggleTheme()">
-                <i class="fas fa-adjust"></i>
-                <span class="text">Toggle Theme</span>
+                <i class="fas fa-moon icon-only"></i>
+                <span class="icon-text">Toggle Dark/Light</span>
             </button>
         </div>
     </div>
@@ -462,15 +506,9 @@
                 <p>Pick a plant to back and watch the race unfold!</p>
                 <div class="controls">
                     <div class="guess-buttons">
-                        <button class="plant1" onclick="selectGuess(1)">
-                            <i class="fas fa-seedling"></i>
-                        </button>
-                        <button class="plant2" onclick="selectGuess(2)">
-                            <i class="fas fa-tree"></i>
-                        </button>
-                        <button class="plant3" onclick="selectGuess(3)">
-                            <i class="fas fa-leaf"></i>
-                        </button>
+                        <button class="plant1" onclick="selectGuess(1)"></button>
+                        <button class="plant2" onclick="selectGuess(2)"></button>
+                        <button class="plant3" onclick="selectGuess(3)"></button>
                     </div>
                     <button class="reset-button" onclick="resetGame()">Reset Game</button>
                 </div>
@@ -538,7 +576,6 @@
 
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
         // Toggle Dark/Light Mode
         function toggleTheme() {
@@ -752,6 +789,9 @@
                 if (gameDuration > 0) {
                     gameDuration--;
                     updateRealTimeInfo();
+                } else if (gameDuration === 0 && !gameEnded) {
+                    gameEnded = true;
+                    endGame(false, true); // false for not all dead, true for time up
                 }
             }, 1000);
         }
@@ -889,11 +929,14 @@
                 const choiceIndicator = (plant.id === userGuess) ? '<span class="choice-indicator">*Your choice</span>' : '';
                 infoDiv.innerHTML += `
                     <div class="stat-item">
-                        <div class="label">Plant ${plant.id} ${choiceIndicator}</div>
-                        <div class="progress-bar">
-                            <div class="progress ${healthClass}" style="width: ${healthPercentage}%"></div>
+                        <img src="assets/plant${plant.id}.png" alt="Plant ${plant.id}">
+                        <div>
+                            <div class="label">Plant ${plant.id} ${choiceIndicator}</div>
+                            <div class="progress-bar">
+                                <div class="progress ${healthClass}" style="width: ${healthPercentage}%"></div>
+                            </div>
+                            <div class="resources">Resources Collected: ${plant.resources_collected}</div>
                         </div>
-                        <div class="resources">Resources Collected: ${plant.resources_collected}</div>
                     </div>
                 `;
             });
@@ -902,11 +945,14 @@
             const timePercentage = Math.max(0, (gameDuration / 120) * 100);
             infoDiv.innerHTML += `
                 <div class="stat-item">
-                    <div class="label"><span class="time-display">⏱️ Time Left</span></div>
-                    <div class="progress-bar">
-                        <div class="progress healthy" style="width: ${timePercentage}%"></div>
+                    <img src="assets/sunlight.png" alt="Time">
+                    <div>
+                        <div class="label"><span class="time-display">⏱️ Time Left</span></div>
+                        <div class="progress-bar">
+                            <div class="progress healthy" style="width: ${timePercentage}%"></div>
+                        </div>
+                        <div class="resources">${gameDuration} seconds</div>
                     </div>
-                    <div class="resources">${gameDuration} seconds</div>
                 </div>
             `;
         }
@@ -916,17 +962,24 @@
             // Stop the timer
             clearInterval(gameTimer);
 
-            // Determine the best plant by resources collected without mutating the original array
-            const bestPlant = plants.reduce((prev, current) => {
-                if (current.resources_collected > prev.resources_collected) {
-                    return current;
-                } else {
-                    return prev;
-                }
-            }, plants[0]);
+            // Determine the best plant by resources collected and survival
+            let survivingPlants = plants.filter(plant => plant.health > 0);
+            let bestPlant;
+
+            if (survivingPlants.length > 0) {
+                // If there are surviving plants, choose the one with the highest resources
+                bestPlant = survivingPlants.reduce((prev, current) => {
+                    return (current.resources_collected > prev.resources_collected) ? current : prev;
+                }, survivingPlants[0]);
+            } else {
+                // If no plants survived, choose the one with the highest resources before dying
+                bestPlant = plants.reduce((prev, current) => {
+                    return (current.resources_collected > prev.resources_collected) ? current : prev;
+                }, plants[0]);
+            }
 
             // Play appropriate sound
-            if (timeUp || !allDead) {
+            if (timeUp || (!allDead && bestPlant.health > 0)) {
                 if (bestPlant.id === userGuess) {
                     playSound('win');
                 } else {
@@ -936,43 +989,32 @@
                 playSound('gameEnd');
             }
 
-            // Determine the message based on game outcome
-            let message = '';
-            if (timeUp) {
-                message = `⏰ Time's up! Plant ${bestPlant.id} collected the most resources.`;
-            } else if (!allDead) {
-                // One plant survived
-                if (bestPlant.id === userGuess) {
-                    message = `🎉 Congratulations! Your chosen plant (Plant ${bestPlant.id}) outlasted the others and thrived the most!`;
-                } else {
-                    message = `Better luck next time! Plant ${bestPlant.id} was the ultimate survivor.`;
-                }
-            } else {
-                // All plants died
-                if (bestPlant.id === userGuess) {
-                    message = `💀 All plants perished! But Plant ${bestPlant.id}, your chosen one, collected the most resources before dying. Great guess!`;
-                } else {
-                    message = `💀 All plants died, but Plant ${bestPlant.id} managed to collect the most resources. Better luck next time!`;
-                }
+            // Trigger Confetti and SweetAlert2 popup
+            if (bestPlant.health > 0) {
+                // If the best plant is still alive (win condition)
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#ff0a54', '#ff477e', '#ff85a1', '#fbb1bd', '#f9bec7']
+                });
             }
 
-            // Show SweetAlert2 Popup
+            // Configure SweetAlert2 based on theme
+            const isDarkMode = document.body.classList.contains('dark-mode');
             Swal.fire({
-                title: 'Game Over',
-                text: message,
-                icon: (bestPlant.id === userGuess) ? 'success' : 'warning',
-                background: (document.body.classList.contains('dark-mode')) ? '#161B22' : '#ffffff',
-                color: (document.body.classList.contains('dark-mode')) ? '#C9D1D9' : '#333333',
-                confirmButtonColor: '#4CAF50',
-                didOpen: () => {
-                    // Launch confetti
-                    confetti({
-                        particleCount: 100,
-                        spread: 70,
-                        origin: { y: 0.6 }
-                    });
-                }
+                title: bestPlant.id === userGuess ? '🎉 Congratulations!' : '🏆 Winner!',
+                text: bestPlant.id === userGuess 
+                    ? `Your chosen plant (Plant ${bestPlant.id}) won the race with ${bestPlant.resources_collected} resources!`
+                    : `Plant ${bestPlant.id} won the race with ${bestPlant.resources_collected} resources.`,
+                icon: bestPlant.id === userGuess ? 'success' : 'info',
+                background: isDarkMode ? '#30363D' : '#fff',
+                color: isDarkMode ? '#C9D1D9' : '#333',
+                confirmButtonColor: isDarkMode ? '#58A6FF' : '#4CAF50',
             });
+
+            // Disable plant selection buttons after game ends
+            disablePlantSelection(true);
         }
 
         // Disable/Enable Plant Selection Buttons
@@ -1089,6 +1131,9 @@
                 aboutGame.style.display = 'flex';
             }
         }
+
+        // Start Game Timer when User Selects a Plant
+        // Initialization is already handled in selectGuess()
     </script>
 </body>
 </html>
