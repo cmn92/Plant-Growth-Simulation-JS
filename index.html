@@ -669,6 +669,7 @@
         let hazards = [];
         let gameEnded = false;
         let gameDuration = 120; // Game lasts for 120 seconds (2 minutes)
+        const minGameDuration = 30; // Minimum duration before game can end
         let gameTimer = null;
 
         const canvas = document.getElementById('gameCanvas');
@@ -706,6 +707,7 @@
                 initializeGame();
                 gameLoop();
                 startTimer();
+                disablePlantSelection(true);
             }
         }
 
@@ -779,7 +781,7 @@
                 }))
             );
 
-            // Set distinct characteristics
+            // Set distinct characteristics with adjusted parameters for stiffer competition
             plants = [
                 {
                     id: 1,
@@ -787,7 +789,7 @@
                     y: canvasHeight - 50,
                     health: 100,
                     growth_rate: 3 + Math.random()*1, 
-                    hazard_resistance: 0.5 + Math.random()*0.3,
+                    hazard_resistance: 0.6 + Math.random()*0.2, // Increased resistance
                     resource_efficiency: 0.5 + Math.random()*0.3,
                     resources_collected: 0,
                     img: plantImages[0],
@@ -802,7 +804,7 @@
                     y: canvasHeight - 50,
                     health: 100,
                     growth_rate: 1.5 + Math.random()*1,
-                    hazard_resistance: 0.8 + Math.random()*0.2,
+                    hazard_resistance: 0.9 + Math.random()*0.1, // Increased resistance
                     resource_efficiency: 0.5 + Math.random()*0.3,
                     resources_collected: 0,
                     img: plantImages[1],
@@ -817,7 +819,7 @@
                     y: canvasHeight - 50,
                     health: 100,
                     growth_rate: 2 + Math.random()*1,
-                    hazard_resistance: 0.5 + Math.random()*0.3,
+                    hazard_resistance: 0.6 + Math.random()*0.2, // Increased resistance
                     resource_efficiency: 0.8 + Math.random()*0.2,
                     resources_collected: 0,
                     img: plantImages[2],
@@ -867,8 +869,8 @@
                 plant.x = Math.max(plant.radius, Math.min(canvas.width - plant.radius, plant.x));
                 plant.y = Math.max(plant.radius, Math.min(canvas.height - plant.radius, plant.y));
 
-                // Natural health decay
-                plant.health -= 0.2;
+                // Natural health decay (reduced for longer survival)
+                plant.health -= 0.1; // Changed from 0.2 to 0.1
 
                 // Collect resources
                 if (distToSunlight < sunlight.radius) {
@@ -888,11 +890,11 @@
                     playSound('collect');
                 }
 
-                // Hazards damage
+                // Hazards damage (reduced for longer survival)
                 hazards.forEach(hazard => {
                     const hazardDist = getDistance(plant.x, plant.y, hazard.x, hazard.y);
                     if (hazardDist < (plant.radius + hazard.radius)) {
-                        plant.health -= 15 * (1 - plant.hazard_resistance);
+                        plant.health -= 10 * (1 - plant.hazard_resistance); // Changed from 15 to 10
                         triggerFlash(plant, 'red');
                         playSound('hit');
                     }
@@ -909,21 +911,23 @@
             });
 
             // Check end conditions based on game duration
-            if (gameDuration <= 0 && !gameEnded) {
+            const elapsedTime = 120 - gameDuration;
+            if (gameDuration <=0 && !gameEnded) {
                 gameEnded = true;
                 endGame(false, true); // false for not all dead, true for time up
             }
 
-            // Check if only one plant is left alive
-            if (alivePlants === 1 && !gameEnded) {
-                gameEnded = true;
-                endGame();
-            }
+            // Allow ending the game based on plant conditions only after minimum duration
+            if (elapsedTime >= minGameDuration) {
+                if (alivePlants ===1 && !gameEnded) {
+                    gameEnded = true;
+                    endGame();
+                }
 
-            // Check if all plants are dead
-            if (alivePlants === 0 && !gameEnded) {
-                gameEnded = true;
-                endGame(true);
+                if (alivePlants ===0 && !gameEnded) {
+                    gameEnded = true;
+                    endGame(true);
+                }
             }
 
             updateRealTimeInfo();
@@ -970,8 +974,8 @@
                     : 'Dead';
                 const healthClass = healthPercentage > 50 ? 'healthy' : 'low-health';
                 const choiceIndicator = (plant.id === userGuess) ? '<span class="choice-indicator">*Your choice</span>' : '';
-                infoDiv.innerHTML += `
-                    <div class="stat-item">
+                infoDiv.innerHTML += 
+                    `<div class="stat-item">
                         <img src="assets/plant${plant.id}.png" alt="Plant ${plant.id}">
                         <div class="stat-details">
                             <div class="label">Plant ${plant.id} ${choiceIndicator}</div>
@@ -980,14 +984,13 @@
                             </div>
                             <div class="resources">Resources Collected: ${plant.resources_collected}</div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
 
             // Display remaining time without image
             const timePercentage = Math.max(0, (gameDuration / 120) * 100);
-            infoDiv.innerHTML += `
-                <div class="stat-item">
+            infoDiv.innerHTML += 
+                `<div class="stat-item">
                     <div class="stat-details">
                         <div class="label"><span class="time-display">⏱️ Time Left</span></div>
                         <div class="progress-bar">
@@ -995,8 +998,7 @@
                         </div>
                         <div class="resources">${gameDuration} seconds</div>
                     </div>
-                </div>
-            `;
+                </div>`;
         }
 
         // End Game Function
