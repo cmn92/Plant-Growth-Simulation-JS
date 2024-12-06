@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         /* Root Variables */
         :root {
@@ -531,8 +533,6 @@
 
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Canvas-Confetti JS -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script>
         // Toggle Dark/Light Mode
         function toggleTheme() {
@@ -911,13 +911,24 @@
             clearInterval(gameTimer);
 
             // Determine the best plant by resources collected without mutating the original array
-            const bestPlant = plants.reduce((prev, current) => {
-                if (current.resources_collected > prev.resources_collected) {
-                    return current;
-                } else {
-                    return prev;
+            let bestPlant = null;
+
+            if (!allDead) {
+                // Among surviving plants, pick the one with highest resources
+                const survivingPlants = plants.filter(plant => plant.health > 0);
+                if (survivingPlants.length > 0) {
+                    bestPlant = survivingPlants.reduce((prev, current) => {
+                        return (current.resources_collected > prev.resources_collected) ? current : prev;
+                    }, survivingPlants[0]);
                 }
-            }, plants[0]);
+            }
+
+            if (!bestPlant) {
+                // If no plants are alive, pick the one with highest resources before dying
+                bestPlant = plants.reduce((prev, current) => {
+                    return (current.resources_collected > prev.resources_collected) ? current : prev;
+                }, plants[0]);
+            }
 
             // Play appropriate sound
             if (timeUp || !allDead) {
@@ -930,68 +941,59 @@
                 playSound('gameEnd');
             }
 
-            // Configure SweetAlert2 based on theme
-            const isDarkMode = document.body.classList.contains('dark-mode');
+            // Determine the message and type for SweetAlert2
+            let title = '';
+            let text = '';
+            let icon = 'info';
 
+            if (timeUp) {
+                title = 'Time\'s Up!';
+                text = `⏰ Time's up! Plant ${bestPlant.id} collected the most resources.`;
+                icon = 'success';
+            } else if (!allDead) {
+                if (bestPlant.id === userGuess) {
+                    title = 'Congratulations!';
+                    text = `🎉 Your chosen plant (Plant ${bestPlant.id}) outlasted the others and thrived the most!`;
+                    icon = 'success';
+                } else {
+                    title = 'Game Over';
+                    text = `😞 Better luck next time! Plant ${bestPlant.id} was the ultimate survivor.`;
+                    icon = 'error';
+                }
+            } else {
+                if (bestPlant.id === userGuess) {
+                    title = 'All Plants Perished';
+                    text = `💀 All plants perished! But Plant ${bestPlant.id}, your chosen one, collected the most resources before dying. Great guess!`;
+                    icon = 'warning';
+                } else {
+                    title = 'All Plants Perished';
+                    text = `💀 All plants died, but Plant ${bestPlant.id} managed to collect the most resources. Better luck next time!`;
+                    icon = 'warning';
+                }
+            }
+
+            // Show SweetAlert2 popup with confetti
             Swal.fire({
-                title: isDarkMode ? 'Game Over' : 'Game Over',
-                html: generateAlertHTML(bestPlant, allDead, timeUp),
-                icon: determineIcon(bestPlant, allDead, timeUp),
-                background: isDarkMode ? '#161B22' : '#ffffff',
-                color: isDarkMode ? '#C9D1D9' : '#333333',
-                confirmButtonColor: isDarkMode ? '#58A6FF' : '#4CAF50',
-                didClose: () => {
-                    // Trigger celebration if player won
-                    if ((bestPlant.id === userGuess) && (timeUp === false || allDead === false)) {
-                        celebrate();
+                title: title,
+                text: text,
+                icon: icon,
+                confirmButtonText: 'OK',
+                background: getComputedStyle(document.body).backgroundColor,
+                color: getComputedStyle(document.body).color,
+                didOpen: () => {
+                    if (icon === 'success') {
+                        // Trigger confetti only for wins
+                        confetti({
+                            particleCount: 100,
+                            spread: 70,
+                            origin: { y: 0.6 }
+                        });
                     }
                 }
             });
-        }
 
-        // Generate HTML for SweetAlert2
-        function generateAlertHTML(bestPlant, allDead, timeUp) {
-            if (timeUp) {
-                return `⏰ Time's up! Plant <strong>${bestPlant.id}</strong> collected the most resources.`;
-            } else if (!allDead) {
-                if (bestPlant.id === userGuess) {
-                    return `🎉 Congratulations! Your chosen plant <strong>Plant ${bestPlant.id}</strong> outlasted the others and thrived the most!`;
-                } else {
-                    return `Better luck next time! Plant <strong>${bestPlant.id}</strong> was the ultimate survivor.`;
-                }
-            } else {
-                if (bestPlant.id === userGuess) {
-                    return `💀 All plants perished! But your chosen plant <strong>Plant ${bestPlant.id}</strong> collected the most resources before dying. Great guess!`;
-                } else {
-                    return `💀 All plants died, but Plant <strong>${bestPlant.id}</strong> managed to collect the most resources. Better luck next time!`;
-                }
-            }
-        }
-
-        // Determine Icon for SweetAlert2
-        function determineIcon(bestPlant, allDead, timeUp) {
-            if (timeUp || !allDead) {
-                if (bestPlant.id === userGuess) {
-                    return 'success';
-                } else {
-                    return 'warning';
-                }
-            } else {
-                if (bestPlant.id === userGuess) {
-                    return 'error';
-                } else {
-                    return 'error';
-                }
-            }
-        }
-
-        // Celebrate Function using canvas-confetti
-        function celebrate() {
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
+            // Disable plant selection buttons after game ends
+            disablePlantSelection(true);
         }
 
         // Disable/Enable Plant Selection Buttons
@@ -1109,14 +1111,6 @@
             }
         }
 
-        // Initialize Game Loop if already selected
-        window.addEventListener('load', () => {
-            if (userGuess !== null && imagesLoaded === totalImages) {
-                initializeGame();
-                gameLoop();
-                startTimer();
-            }
-        });
     </script>
 </body>
 </html>
