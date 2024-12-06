@@ -231,6 +231,7 @@
             cursor: pointer;
             font-size: 1rem;
             transition: background 0.3s ease, color 0.3s ease;
+            white-space: nowrap;
         }
 
         .reset-button:hover {
@@ -337,7 +338,6 @@
             transition: transform 0.3s ease;
         }
 
-
         .about-section h3 {
             font-size: 1.4rem;
             color: var(--heading-color);
@@ -347,7 +347,7 @@
         .about-description {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 10px;
         }
 
         .about-description img {
@@ -360,7 +360,7 @@
         .about-description p {
             margin: 0;
             font-size: 1rem;
-            line-height: 1;
+            line-height: 1.2;
         }
 
         /* Scrollbar Styling for Stats Section */
@@ -421,6 +421,12 @@
             .about-description img {
                 width: 50px;
                 height: 50px;
+            }
+
+            /* Ensure Reset Game button is visible */
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
     </style>
@@ -895,8 +901,14 @@
             // Stop the timer
             clearInterval(gameTimer);
 
-            // Determine the best plant by resources collected
-            const bestPlant = plants.sort((a, b) => b.resources_collected - a.resources_collected)[0];
+            // Determine the best plant by resources collected without mutating the original array
+            const bestPlant = plants.reduce((prev, current) => {
+                if (current.resources_collected > prev.resources_collected) {
+                    return current;
+                } else {
+                    return prev;
+                }
+            }, plants[0]);
 
             // Play appropriate sound
             if (timeUp || !allDead) {
@@ -1048,10 +1060,6 @@
                 aboutGame.style.display = 'flex';
             }
         }
-
-        // Start Game Timer when User Selects a Plant
-        // Initialization is already handled in selectGuess()
-
     </script>
 </body>
 </html>
