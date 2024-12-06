@@ -6,6 +6,8 @@
     <title>Plant Growth Game</title>
     <!-- Modern Font: Montserrat -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
         /* Root Variables */
         :root {
@@ -524,6 +526,10 @@
     <audio id="loseSound" src="assets/lose.mp3"></audio>
     <audio id="gameEndSound" src="assets/game-end.mp3"></audio>
 
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- canvas-confetti JS -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script>
         // Toggle Dark/Light Mode
         function toggleTheme() {
@@ -921,26 +927,40 @@
                 playSound('gameEnd');
             }
 
-            setTimeout(() => {
-                if (timeUp) {
-                    alert(`⏰ Time's up! Plant ${bestPlant.id} collected the most resources.`);
-                } else if (!allDead) {
-                    // One plant survived
-                    if (bestPlant.id === userGuess) {
-                        alert(`🎉 Congratulations! Your chosen plant (Plant ${bestPlant.id}) outlasted the others and thrived the most!`);
-                    } else {
-                        alert(`Better luck next time! Plant ${bestPlant.id} was the ultimate survivor.`);
-                    }
+            // Prepare the message for SweetAlert2
+            let message = '';
+            if (timeUp) {
+                message = `⏰ Time's up! Plant ${bestPlant.id} collected the most resources.`;
+            } else if (!allDead) {
+                // One plant survived
+                if (bestPlant.id === userGuess) {
+                    message = `🎉 Congratulations! Your chosen plant (Plant ${bestPlant.id}) outlasted the others and thrived the most!`;
                 } else {
-                    // All plants died
-                    if (bestPlant.id === userGuess) {
-                        alert(`💀 All plants perished! But Plant ${bestPlant.id}, your chosen one, collected the most resources before dying. Great guess!`);
-                    } else {
-                        alert(`💀 All plants died, but Plant ${bestPlant.id} managed to collect the most resources. Better luck next time!`);
-                    }
+                    message = `Better luck next time! Plant ${bestPlant.id} was the ultimate survivor.`;
                 }
-                // Do not reset automatically
-            }, 200);
+            } else {
+                // All plants died
+                if (bestPlant.id === userGuess) {
+                    message = `💀 All plants perished! But Plant ${bestPlant.id}, your chosen one, collected the most resources before dying. Great guess!`;
+                } else {
+                    message = `💀 All plants died, but Plant ${bestPlant.id} managed to collect the most resources. Better luck next time!`;
+                }
+            }
+
+            // Show SweetAlert2 modal
+            Swal.fire({
+                title: 'Game Over!',
+                text: message,
+                icon: (bestPlant.id === userGuess) ? 'success' : 'warning',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                // Optionally, you can add additional actions here after the user closes the modal
+            });
+
+            // Trigger celebration animation if the user won
+            if (bestPlant.id === userGuess) {
+                launchConfetti();
+            }
 
             // Disable plant selection buttons after game ends
             disablePlantSelection(true);
@@ -1039,6 +1059,32 @@
                 default:
                     break;
             }
+        }
+
+        // Function to Launch Confetti Celebration
+        function launchConfetti() {
+            // Basic confetti
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            // Fireworks-style confetti
+            setTimeout(() => {
+                confetti({
+                    particleCount: 100,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 100,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+            }, 500);
         }
 
         // Initialize Game on Tab Switch if Images are Loaded
