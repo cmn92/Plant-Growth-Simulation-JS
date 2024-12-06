@@ -4,11 +4,12 @@
     <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Plant Growth Game</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Modern Font: Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         /* Root Variables */
         :root {
-            --bg-color: #f8fafd;
+            --bg-color: #f0f4f8;
             --text-color: #333;
             --card-bg: #ffffff;
             --border-color: #ccc;
@@ -41,7 +42,7 @@
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Montserrat', sans-serif;
             background: var(--bg-color);
             color: var(--text-color);
             margin: 0;
@@ -70,8 +71,8 @@
         }
 
         .header .logo img {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             margin-right: 10px;
         }
 
@@ -86,7 +87,7 @@
             gap: 10px;
         }
 
-        .toggle-theme {
+        .header-buttons button {
             background: var(--card-bg);
             color: var(--text-color);
             border: 1px solid var(--border-color);
@@ -97,7 +98,7 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        .toggle-theme:hover {
+        .header-buttons button:hover {
             background: var(--accent-color);
             color: #fff;
         }
@@ -106,6 +107,8 @@
         .nav-menu {
             display: flex;
             gap: 20px;
+            justify-content: center;
+            margin-top: 10px;
         }
 
         .nav-menu button {
@@ -148,9 +151,14 @@
             .main-content {
                 flex-direction: row;
             }
+
+            .game-section, .stats-section {
+                flex: 1;
+            }
         }
 
-        .game-section, .stats-section {
+        /* Game Section Styles */
+        .game-section {
             background: var(--card-bg);
             color: var(--text-color);
             border-radius: 8px;
@@ -159,49 +167,17 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        @media (min-width: 1025px) {
-            .game-section, .stats-section {
-                flex: 1;
-            }
+        .game-section p {
+            margin: 0;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
         }
 
-        h3 {
-            margin-top: 0;
-            font-size: 1.4rem;
-            color: var(--heading-color);
-        }
-
-        .description {
-            display: flex;
-            align-items: center;
-            margin: 15px 0;
-        }
-
-        .description img {
-            width: 40px;
-            height: 40px;
-            margin-right: 15px;
-            border-radius: 5px;
-        }
-
-        canvas {
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--card-bg), var(--bg-color));
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            height: auto;
-            max-width: 100%;
-            max-height: 400px;
-            margin-top: 20px; /* Reduced spacing above canvas */
-        }
-
-        /* Plant Selection and Reset Buttons */
         .controls {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-top: 20px;
+            margin-bottom: 15px;
         }
 
         .guess-buttons {
@@ -254,6 +230,7 @@
             cursor: pointer;
             font-size: 1rem;
             transition: background 0.3s ease, color 0.3s ease;
+            height: 70px; /* Match the height of plant buttons */
         }
 
         .reset-button:hover {
@@ -261,18 +238,46 @@
             color: #fff;
         }
 
+        /* Canvas Styles */
+        canvas {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--card-bg), var(--bg-color));
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            max-height: 400px;
+            margin-top: 20px; /* Reduced spacing above canvas */
+        }
+
         /* Real-Time Statistics Styles */
         .stats-section {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+            transition: background 0.3s ease, color 0.3s ease;
             max-height: 80vh;
             overflow-y: auto;
         }
 
-        .stat-item {
+        .stats-section h3 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            color: var(--heading-color);
             margin-bottom: 15px;
+        }
+
+        .stat-item {
+            margin-bottom: 20px;
         }
 
         .stat-item .label {
             font-weight: 500;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
         }
 
         .progress-bar {
@@ -281,7 +286,7 @@
             border-radius: 5px;
             overflow: hidden;
             height: 20px;
-            margin-top: 5px;
+            margin-bottom: 5px;
         }
 
         .progress {
@@ -298,60 +303,51 @@
             background-color: #f44336;
         }
 
-        /* Collapsible About Section */
+        /* Resources Collected */
+        .resources {
+            font-size: 0.95rem;
+        }
+
+        /* Time Display */
+        .time-display {
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+            gap: 5px;
+        }
+
+        /* About Game Section */
         .about-section {
             display: none;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
 
         .about-section.active {
             display: flex;
         }
 
-        .collapsible {
-            background: var(--card-bg);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
+        .about-section h3 {
+            font-size: 1.6rem;
+            color: var(--heading-color);
+            margin-bottom: 15px;
+        }
+
+        .about-section .description {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            transition: background 0.3s ease, color 0.3s ease;
+            gap: 15px;
         }
 
-        .collapsible:hover {
-            background: var(--accent-color);
-            color: #fff;
+        .about-section .description img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
         }
 
-        .collapsible-content {
-            display: none;
-            flex-direction: column;
-            gap: 10px;
-            padding: 10px 15px;
-            border-left: 2px solid var(--accent-color);
-        }
-
-        .collapsible.active + .collapsible-content {
-            display: flex;
-        }
-
-        /* Scrollbar Styling for Stats Section */
-        .stats-section::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .stats-section::-webkit-scrollbar-track {
-            background: var(--card-bg);
-        }
-
-        .stats-section::-webkit-scrollbar-thumb {
-            background-color: var(--border-color);
-            border-radius: 4px;
+        .about-section .description p {
+            margin: 0;
+            font-size: 1rem;
         }
 
         /* Responsive Adjustments */
@@ -390,14 +386,33 @@
                 flex-direction: column;
             }
 
-            .game-section, .stats-section {
+            .game-section, .stats-section, .about-section {
                 width: 100%;
             }
 
-            .collapsible-content {
-                border-left: none;
-                border-top: 2px solid var(--accent-color);
+            .about-section .description img {
+                width: 50px;
+                height: 50px;
             }
+
+            .header .logo img {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        /* Scrollbar Styling for Stats Section */
+        .stats-section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .stats-section::-webkit-scrollbar-track {
+            background: var(--card-bg);
+        }
+
+        .stats-section::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -409,14 +424,10 @@
             <h1>Plant Growth Game</h1>
         </div>
         <div class="header-buttons">
+            <button onclick="switchTab('play')" id="playGameHeader" class="active">Play Game</button>
+            <button onclick="switchTab('about')" id="aboutGameHeader">About Game</button>
             <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark/Light Mode</button>
         </div>
-    </div>
-
-    <!-- Navigation Menu -->
-    <div class="nav-menu">
-        <button id="playGameTab" class="active" onclick="switchTab('play')">Play Game</button>
-        <button id="aboutGameTab" onclick="switchTab('about')">About Game</button>
     </div>
 
     <!-- Main Container -->
@@ -425,6 +436,7 @@
         <div id="playGame" class="main-content">
             <!-- Game Section -->
             <div class="game-section">
+                <p>Pick a plant to back and watch the race unfold!</p>
                 <div class="controls">
                     <div class="guess-buttons">
                         <button class="plant1" onclick="selectGuess(1)">1</button>
@@ -447,57 +459,41 @@
 
         <!-- About Game Tab Content -->
         <div id="aboutGame" class="about-section">
-            <!-- Collapsible Sections for Plants, Resources, and Hazards -->
-            <div class="collapsible" onclick="toggleCollapse(this)">
-                <span>About the Plants</span>
-                <span>▼</span>
+            <h3>About the Plants</h3>
+            <div class="description">
+                <img src="assets/plant1.png" alt="Plant 1">
+                <p><strong>Plant 1:</strong> Extremely fast growth, but average resilience and efficiency.</p>
             </div>
-            <div class="collapsible-content">
-                <div class="description">
-                    <img src="assets/plant1.png" alt="Plant 1">
-                    <p><strong>Plant 1:</strong> Extremely fast growth, but average resilience and efficiency.</p>
-                </div>
-                <div class="description">
-                    <img src="assets/plant2.png" alt="Plant 2">
-                    <p><strong>Plant 2:</strong> Tough and resilient, hazards barely faze it, though it's slower.</p>
-                </div>
-                <div class="description">
-                    <img src="assets/plant3.png" alt="Plant 3">
-                    <p><strong>Plant 3:</strong> Highly efficient at using resources, thrives with less input.</p>
-                </div>
+            <div class="description">
+                <img src="assets/plant2.png" alt="Plant 2">
+                <p><strong>Plant 2:</strong> Tough and resilient, hazards barely faze it, though it's slower.</p>
+            </div>
+            <div class="description">
+                <img src="assets/plant3.png" alt="Plant 3">
+                <p><strong>Plant 3:</strong> Highly efficient at using resources, thrives with less input.</p>
             </div>
 
-            <div class="collapsible" onclick="toggleCollapse(this)">
-                <span>About Resources</span>
-                <span>▼</span>
+            <h3>About Resources</h3>
+            <div class="description">
+                <img src="assets/sunlight.png" alt="Sunlight">
+                <p><strong>Sunlight:</strong> Abundant in upper regions. Greatly boosts plant health.</p>
             </div>
-            <div class="collapsible-content">
-                <div class="description">
-                    <img src="assets/sunlight.png" alt="Sunlight">
-                    <p><strong>Sunlight:</strong> Abundant in upper regions. Greatly boosts plant health.</p>
-                </div>
-                <div class="description">
-                    <img src="assets/water.png" alt="Water">
-                    <p><strong>Water:</strong> Located lower down. Provides moderate but steady health gains.</p>
-                </div>
-                <p>Collecting these resources replenishes health and allows plants to survive longer.</p>
+            <div class="description">
+                <img src="assets/water.png" alt="Water">
+                <p><strong>Water:</strong> Located lower down. Provides moderate but steady health gains.</p>
             </div>
+            <p>Collecting these resources replenishes health and allows plants to survive longer.</p>
 
-            <div class="collapsible" onclick="toggleCollapse(this)">
-                <span>About Hazards</span>
-                <span>▼</span>
+            <h3>About Hazards</h3>
+            <div class="description">
+                <img src="assets/hazard.png" alt="Biotic Stress">
+                <p><strong>Biotic Stress (Moving Hazard):</strong> Drifts around the field, harming plants that get too close.</p>
             </div>
-            <div class="collapsible-content">
-                <div class="description">
-                    <img src="assets/hazard.png" alt="Biotic Stress">
-                    <p><strong>Biotic Stress (Moving Hazard):</strong> Drifts around the field, harming plants that get too close.</p>
-                </div>
-                <div class="description">
-                    <img src="assets/hazard2.png" alt="Environmental Stress">
-                    <p><strong>Environmental Stress (Static Hazard):</strong> Stationary but dangerous. Getting near it drains plant health.</p>
-                </div>
-                <p>Some plants are more resilient and lose less health when encountering these threats. Choose wisely!</p>
+            <div class="description">
+                <img src="assets/hazard2.png" alt="Environmental Stress">
+                <p><strong>Environmental Stress (Static Hazard):</strong> Stationary but dangerous. Getting near it drains plant health.</p>
             </div>
+            <p>Some plants are more resilient and lose less health when encountering these threats. Choose wisely!</p>
         </div>
     </div>
 
@@ -529,32 +525,21 @@
 
         // Tab Switching Functionality
         function switchTab(tab) {
-            const playGameTab = document.getElementById('playGameTab');
-            const aboutGameTab = document.getElementById('aboutGameTab');
+            const playGameTabHeader = document.getElementById('playGameHeader');
+            const aboutGameTabHeader = document.getElementById('aboutGameHeader');
             const playGame = document.getElementById('playGame');
             const aboutGame = document.getElementById('aboutGame');
 
             if (tab === 'play') {
-                playGameTab.classList.add('active');
-                aboutGameTab.classList.remove('active');
+                playGameTabHeader.classList.add('active');
+                aboutGameTabHeader.classList.remove('active');
                 playGame.style.display = 'flex';
                 aboutGame.style.display = 'none';
             } else {
-                aboutGameTab.classList.add('active');
-                playGameTab.classList.remove('active');
+                aboutGameTabHeader.classList.add('active');
+                playGameTabHeader.classList.remove('active');
                 playGame.style.display = 'none';
                 aboutGame.style.display = 'flex';
-            }
-        }
-
-        // Collapsible Sections in About Game
-        function toggleCollapse(element) {
-            element.classList.toggle('active');
-            const content = element.nextElementSibling;
-            if (content.style.display === "flex") {
-                content.style.display = "none";
-            } else {
-                content.style.display = "flex";
             }
         }
 
@@ -618,7 +603,7 @@
         // Resize Canvas Function
         function resizeCanvas() {
             const containerWidth = canvas.parentElement.clientWidth;
-            const containerHeight = window.innerHeight * 0.6; // Adjust as needed
+            const containerHeight = window.innerHeight * 0.5; // Adjust as needed
 
             canvas.width = containerWidth;
             canvas.height = containerHeight;
@@ -877,7 +862,17 @@
             });
 
             // Display remaining time
-            infoDiv.innerHTML += `<div class="stat-item"><div class="label">Time Left</div><div class="progress-bar"><div class="progress healthy" style="width: ${Math.max(0, (gameDuration / 120) * 100)}%"></div></div><div class="resources">${gameDuration} seconds</div></div>`;
+            infoDiv.innerHTML += `
+                <div class="stat-item">
+                    <div class="label">Time Left</div>
+                    <div class="progress-bar">
+                        <div class="progress healthy" style="width: ${Math.max(0, (gameDuration / 120) * 100)}%"></div>
+                    </div>
+                    <div class="resources">
+                        ⏱️ Time Left: ${gameDuration} seconds
+                    </div>
+                </div>
+            `;
         }
 
         // End Game Function
@@ -934,7 +929,7 @@
             clearInterval(gameTimer);
             gameDuration = 120; // Reset game duration
 
-            // Optionally, switch back to Play Game tab
+            // Switch back to Play Game tab
             switchTab('play');
         }
 
@@ -995,26 +990,6 @@
                     break;
                 default:
                     break;
-            }
-        }
-
-        // Initialize Game on Tab Switch if Images are Loaded
-        function switchTab(tab) {
-            const playGameTab = document.getElementById('playGameTab');
-            const aboutGameTab = document.getElementById('aboutGameTab');
-            const playGame = document.getElementById('playGame');
-            const aboutGame = document.getElementById('aboutGame');
-
-            if (tab === 'play') {
-                playGameTab.classList.add('active');
-                aboutGameTab.classList.remove('active');
-                playGame.style.display = 'flex';
-                aboutGame.style.display = 'none';
-            } else {
-                aboutGameTab.classList.add('active');
-                playGameTab.classList.remove('active');
-                playGame.style.display = 'none';
-                aboutGame.style.display = 'flex';
             }
         }
     </script>
