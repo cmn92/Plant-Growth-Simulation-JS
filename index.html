@@ -209,7 +209,7 @@
         }
 
         .guess-buttons button {
-            background-size: cover;
+            background-size: contain; /* Ensure the image fits within the button */
             background-position: center;
             background-repeat: no-repeat;
             border: none;
@@ -234,10 +234,15 @@
             background-image: url('assets/plant3.png');
         }
 
-        .guess-buttons button:hover {
+        .guess-buttons button:hover:not(:disabled) {
             transform: scale(1.1);
             box-shadow: 0 0 15px var(--accent-color);
             opacity: 0.9;
+        }
+
+        .guess-buttons button:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
         /* Reset Button */
@@ -610,14 +615,14 @@
             const isDarkMode = document.body.classList.contains('dark-mode');
             localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
 
-            // Optional: Update Toggle Button Icon
-            const toggleButton = document.querySelector('.toggle-theme i');
+            // Update Toggle Button Icon
+            const toggleButtonIcon = document.querySelector('.toggle-theme i');
             if (isDarkMode) {
-                toggleButton.classList.remove('fa-adjust');
-                toggleButton.classList.add('fa-sun');
+                toggleButtonIcon.classList.remove('fa-adjust');
+                toggleButtonIcon.classList.add('fa-sun');
             } else {
-                toggleButton.classList.remove('fa-sun');
-                toggleButton.classList.add('fa-adjust');
+                toggleButtonIcon.classList.remove('fa-sun');
+                toggleButtonIcon.classList.add('fa-adjust');
             }
         }
 
@@ -627,9 +632,9 @@
             if (savedTheme === 'dark') {
                 document.body.classList.add('dark-mode');
                 // Update Toggle Button Icon
-                const toggleButton = document.querySelector('.toggle-theme i');
-                toggleButton.classList.remove('fa-adjust');
-                toggleButton.classList.add('fa-sun');
+                const toggleButtonIcon = document.querySelector('.toggle-theme i');
+                toggleButtonIcon.classList.remove('fa-adjust');
+                toggleButtonIcon.classList.add('fa-sun');
             }
 
             // Initialize canvas size
@@ -1018,38 +1023,65 @@
                 }, plants[0]);
             }
 
+            // Determine if the player has won
+            const playerWon = bestPlant.id === userGuess && bestPlant.health > 0;
+
             // Play appropriate sound
-            if (timeUp || (!allDead && bestPlant.health > 0)) {
-                if (bestPlant.id === userGuess) {
-                    playSound('win');
-                } else {
-                    playSound('lose');
-                }
+            if (playerWon) {
+                playSound('win');
+            } else if (timeUp || (!allDead && bestPlant.health > 0)) {
+                playSound('lose');
             } else {
                 playSound('gameEnd');
             }
 
-            // Trigger confetti during SweetAlert2 popup
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 },
-                colors: ['#a864fd', '#29cdff', '#78ff44']
-            });
+            // Only trigger confetti if the player won
+            if (playerWon) {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#a864fd', '#29cdff', '#78ff44']
+                });
+            }
 
             // Configure SweetAlert2 theme
             const isDarkMode = document.body.classList.contains('dark-mode');
 
+            // Determine SweetAlert2 properties based on outcome
+            let title = '';
+            let htmlContent = '';
+            let icon = '';
+
+            if (timeUp) {
+                title = "⏰ Time's up!";
+                htmlContent = `Plant <strong>${bestPlant.id}</strong> collected the most resources!`;
+                icon = 'info';
+            } else if (allDead) {
+                title = "💀 All Plants Perished!";
+                if (bestPlant.id === userGuess) {
+                    htmlContent = `All plants have died, but your chosen Plant <strong>${bestPlant.id}</strong> collected the most resources before perishing. Great effort!`;
+                    icon = 'info';
+                } else {
+                    htmlContent = `All plants have died, but Plant <strong>${bestPlant.id}</strong> collected the most resources. Better luck next time!`;
+                    icon = 'error';
+                }
+            } else {
+                if (playerWon) {
+                    title = "🎉 Congratulations!";
+                    htmlContent = `Your chosen Plant <strong>${bestPlant.id}</strong> survived and collected the most resources!`;
+                    icon = 'success';
+                } else {
+                    title = "😞 You Lost!";
+                    htmlContent = `Plant <strong>${bestPlant.id}</strong> collected the most resources. Try again!`;
+                    icon = 'error';
+                }
+            }
+
             Swal.fire({
-                title: timeUp ? '⏰ Time\'s up!' : allDead ? '💀 All Plants Perished!' : '🎉 Congratulations!',
-                html: timeUp || (!allDead && bestPlant.health > 0) ? 
-                    bestPlant.id === userGuess ? 
-                        `<p>Your chosen Plant <strong>${bestPlant.id}</strong> collected the most resources!</p>` :
-                        `<p>Plant <strong>${bestPlant.id}</strong> collected the most resources!</p>` :
-                    bestPlant.id === userGuess ? 
-                        `<p>All plants perished, but your chosen Plant <strong>${bestPlant.id}</strong> collected the most resources before dying.</p>` :
-                        `<p>All plants perished, but Plant <strong>${bestPlant.id}</strong> collected the most resources.</p>`,
-                icon: timeUp || (!allDead && bestPlant.health > 0) ? (bestPlant.id === userGuess ? 'success' : 'info') : 'error',
+                title: title,
+                html: htmlContent,
+                icon: icon,
                 confirmButtonText: 'OK',
                 background: isDarkMode ? '#161B22' : '#ffffff',
                 color: isDarkMode ? '#C9D1D9' : '#333333',
