@@ -71,8 +71,8 @@
         }
 
         .header .logo img {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             margin-right: 10px;
         }
 
@@ -151,14 +151,9 @@
             .main-content {
                 flex-direction: row;
             }
-
-            .game-section, .stats-section {
-                flex: 1;
-            }
         }
 
-        /* Game Section Styles */
-        .game-section {
+        .game-section, .stats-section {
             background: var(--card-bg);
             color: var(--text-color);
             border-radius: 8px;
@@ -167,22 +162,56 @@
             transition: background 0.3s ease, color 0.3s ease;
         }
 
-        .game-section p {
-            margin: 0;
-            font-size: 1.2rem;
-            margin-bottom: 15px;
+        @media (min-width: 1025px) {
+            .game-section, .stats-section {
+                flex: 1;
+            }
         }
 
+        h3 {
+            margin-top: 0;
+            font-size: 1.4rem;
+            color: var(--heading-color);
+        }
+
+        .description {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            gap: 15px;
+        }
+
+        .description img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+        }
+
+        /* Game Canvas */
+        canvas {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--card-bg), var(--bg-color));
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            max-height: 400px;
+            margin-top: 20px;
+        }
+
+        /* Plant Selection and Reset Buttons */
         .controls {
             display: flex;
             align-items: center;
+            flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 15px;
+            margin-top: 10px;
         }
 
         .guess-buttons {
             display: flex;
-            gap: 20px; /* Increased spacing between buttons */
+            gap: 15px;
         }
 
         .guess-buttons button {
@@ -190,7 +219,7 @@
             color: #fff;
             border: none;
             padding: 15px;
-            border-radius: 50%; /* Circular buttons */
+            border-radius: 50%;
             cursor: pointer;
             font-size: 1rem;
             transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
@@ -230,7 +259,7 @@
             cursor: pointer;
             font-size: 1rem;
             transition: background 0.3s ease, color 0.3s ease;
-            height: 70px; /* Match the height of plant buttons */
+            flex-shrink: 0;
         }
 
         .reset-button:hover {
@@ -238,36 +267,10 @@
             color: #fff;
         }
 
-        /* Canvas Styles */
-        canvas {
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            background: linear-gradient(135deg, var(--card-bg), var(--bg-color));
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            height: auto;
-            max-width: 100%;
-            max-height: 400px;
-            margin-top: 20px; /* Reduced spacing above canvas */
-        }
-
         /* Real-Time Statistics Styles */
         .stats-section {
-            background: var(--card-bg);
-            color: var(--text-color);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
-            transition: background 0.3s ease, color 0.3s ease;
             max-height: 80vh;
             overflow-y: auto;
-        }
-
-        .stats-section h3 {
-            margin-top: 0;
-            font-size: 1.4rem;
-            color: var(--heading-color);
-            margin-bottom: 15px;
         }
 
         .stat-item {
@@ -276,8 +279,10 @@
 
         .stat-item .label {
             font-weight: 500;
-            font-size: 1.1rem;
             margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .progress-bar {
@@ -286,7 +291,7 @@
             border-radius: 5px;
             overflow: hidden;
             height: 20px;
-            margin-bottom: 5px;
+            margin-top: 5px;
         }
 
         .progress {
@@ -303,102 +308,13 @@
             background-color: #f44336;
         }
 
-        /* Resources Collected */
-        .resources {
-            font-size: 0.95rem;
-        }
-
-        /* Time Display */
+        /* Time Display Styling */
         .time-display {
             display: flex;
             align-items: center;
-            font-size: 1.1rem;
             gap: 5px;
-        }
-
-        /* About Game Section */
-        .about-section {
-            display: none;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .about-section.active {
-            display: flex;
-        }
-
-        .about-section h3 {
-            font-size: 1.6rem;
-            color: var(--heading-color);
-            margin-bottom: 15px;
-        }
-
-        .about-section .description {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .about-section .description img {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-        }
-
-        .about-section .description p {
-            margin: 0;
-            font-size: 1rem;
-        }
-
-        /* Responsive Adjustments */
-        @media (min-width: 1025px) {
-            .main-content {
-                flex-direction: row;
-            }
-
-            .game-section, .stats-section {
-                flex: 1;
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .main-content {
-                flex-direction: column;
-            }
-
-            .game-section, .stats-section {
-                width: 100%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .nav-menu {
-                flex-direction: column;
-                width: 100%;
-            }
-
-            .main-content {
-                flex-direction: column;
-            }
-
-            .game-section, .stats-section, .about-section {
-                width: 100%;
-            }
-
-            .about-section .description img {
-                width: 50px;
-                height: 50px;
-            }
-
-            .header .logo img {
-                width: 40px;
-                height: 40px;
-            }
+            font-weight: 500;
+            margin-top: 10px;
         }
 
         /* Scrollbar Styling for Stats Section */
@@ -414,6 +330,32 @@
             background-color: var(--border-color);
             border-radius: 4px;
         }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-menu {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .main-content {
+                flex-direction: column;
+            }
+
+            .game-section, .stats-section {
+                width: 100%;
+            }
+
+            .reset-button {
+                width: 100%;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -424,9 +366,9 @@
             <h1>Plant Growth Game</h1>
         </div>
         <div class="header-buttons">
-            <button onclick="switchTab('play')" id="playGameHeader" class="active">Play Game</button>
-            <button onclick="switchTab('about')" id="aboutGameHeader">About Game</button>
             <button class="toggle-theme" onclick="toggleTheme()">Toggle Dark/Light Mode</button>
+            <button class="nav-menu-button active" onclick="switchTab('play')">Play Game</button>
+            <button class="nav-menu-button" onclick="switchTab('about')">About Game</button>
         </div>
     </div>
 
@@ -458,42 +400,44 @@
         </div>
 
         <!-- About Game Tab Content -->
-        <div id="aboutGame" class="about-section">
-            <h3>About the Plants</h3>
-            <div class="description">
-                <img src="assets/plant1.png" alt="Plant 1">
-                <p><strong>Plant 1:</strong> Extremely fast growth, but average resilience and efficiency.</p>
-            </div>
-            <div class="description">
-                <img src="assets/plant2.png" alt="Plant 2">
-                <p><strong>Plant 2:</strong> Tough and resilient, hazards barely faze it, though it's slower.</p>
-            </div>
-            <div class="description">
-                <img src="assets/plant3.png" alt="Plant 3">
-                <p><strong>Plant 3:</strong> Highly efficient at using resources, thrives with less input.</p>
-            </div>
+        <div id="aboutGame" class="main-content" style="display: none;">
+            <div class="about-section">
+                <h3>About the Plants</h3>
+                <div class="description">
+                    <img src="assets/plant1.png" alt="Plant 1">
+                    <p><strong>Plant 1:</strong> Extremely fast growth, but average resilience and efficiency.</p>
+                </div>
+                <div class="description">
+                    <img src="assets/plant2.png" alt="Plant 2">
+                    <p><strong>Plant 2:</strong> Tough and resilient, hazards barely faze it, though it's slower.</p>
+                </div>
+                <div class="description">
+                    <img src="assets/plant3.png" alt="Plant 3">
+                    <p><strong>Plant 3:</strong> Highly efficient at using resources, thrives with less input.</p>
+                </div>
 
-            <h3>About Resources</h3>
-            <div class="description">
-                <img src="assets/sunlight.png" alt="Sunlight">
-                <p><strong>Sunlight:</strong> Abundant in upper regions. Greatly boosts plant health.</p>
-            </div>
-            <div class="description">
-                <img src="assets/water.png" alt="Water">
-                <p><strong>Water:</strong> Located lower down. Provides moderate but steady health gains.</p>
-            </div>
-            <p>Collecting these resources replenishes health and allows plants to survive longer.</p>
+                <h3>About Resources</h3>
+                <div class="description">
+                    <img src="assets/sunlight.png" alt="Sunlight">
+                    <p><strong>Sunlight:</strong> Abundant in upper regions. Greatly boosts plant health.</p>
+                </div>
+                <div class="description">
+                    <img src="assets/water.png" alt="Water">
+                    <p><strong>Water:</strong> Located lower down. Provides moderate but steady health gains.</p>
+                </div>
+                <p>Collecting these resources replenishes health and allows plants to survive longer.</p>
 
-            <h3>About Hazards</h3>
-            <div class="description">
-                <img src="assets/hazard.png" alt="Biotic Stress">
-                <p><strong>Biotic Stress (Moving Hazard):</strong> Drifts around the field, harming plants that get too close.</p>
+                <h3>About Hazards</h3>
+                <div class="description">
+                    <img src="assets/hazard.png" alt="Biotic Stress">
+                    <p><strong>Biotic Stress (Moving Hazard):</strong> Drifts around the field, harming plants that get too close.</p>
+                </div>
+                <div class="description">
+                    <img src="assets/hazard2.png" alt="Environmental Stress">
+                    <p><strong>Environmental Stress (Static Hazard):</strong> Stationary but dangerous. Getting near it drains plant health.</p>
+                </div>
+                <p>Some plants are more resilient and lose less health when encountering these threats. Choose wisely!</p>
             </div>
-            <div class="description">
-                <img src="assets/hazard2.png" alt="Environmental Stress">
-                <p><strong>Environmental Stress (Static Hazard):</strong> Stationary but dangerous. Getting near it drains plant health.</p>
-            </div>
-            <p>Some plants are more resilient and lose less health when encountering these threats. Choose wisely!</p>
         </div>
     </div>
 
@@ -523,21 +467,21 @@
             resizeCanvas();
         };
 
-        // Tab Switching Functionality
+        // Navigation Menu Button Classes
         function switchTab(tab) {
-            const playGameTabHeader = document.getElementById('playGameHeader');
-            const aboutGameTabHeader = document.getElementById('aboutGameHeader');
+            const playGameTab = document.querySelector('.nav-menu-button:nth-child(1)');
+            const aboutGameTab = document.querySelector('.nav-menu-button:nth-child(2)');
             const playGame = document.getElementById('playGame');
             const aboutGame = document.getElementById('aboutGame');
 
             if (tab === 'play') {
-                playGameTabHeader.classList.add('active');
-                aboutGameTabHeader.classList.remove('active');
+                playGameTab.classList.add('active');
+                aboutGameTab.classList.remove('active');
                 playGame.style.display = 'flex';
                 aboutGame.style.display = 'none';
             } else {
-                aboutGameTabHeader.classList.add('active');
-                playGameTabHeader.classList.remove('active');
+                aboutGameTab.classList.add('active');
+                playGameTab.classList.remove('active');
                 playGame.style.display = 'none';
                 aboutGame.style.display = 'flex';
             }
@@ -603,7 +547,7 @@
         // Resize Canvas Function
         function resizeCanvas() {
             const containerWidth = canvas.parentElement.clientWidth;
-            const containerHeight = window.innerHeight * 0.5; // Adjust as needed
+            const containerHeight = window.innerHeight * 0.6; // Adjust as needed
 
             canvas.width = containerWidth;
             canvas.height = containerHeight;
@@ -868,9 +812,7 @@
                     <div class="progress-bar">
                         <div class="progress healthy" style="width: ${Math.max(0, (gameDuration / 120) * 100)}%"></div>
                     </div>
-                    <div class="resources">
-                        ⏱️ Time Left: ${gameDuration} seconds
-                    </div>
+                    <div class="time-display">⏱️ Time Left: ${gameDuration} seconds</div>
                 </div>
             `;
         }
@@ -880,7 +822,7 @@
             // Stop the timer
             clearInterval(gameTimer);
 
-            // Determine best plant by resources collected
+            // Determine the best plant by resources collected
             const bestPlant = plants.sort((a, b) => b.resources_collected - a.resources_collected)[0];
 
             // Play appropriate sound
@@ -912,8 +854,26 @@
                         alert(`💀 All plants died, but Plant ${bestPlant.id} managed to collect the most resources. Better luck next time!`);
                     }
                 }
-                resetGame();
+                // Removed resetGame() from here to prevent automatic reset
             }, 200);
+
+            // Disable plant selection buttons after game ends
+            disablePlantSelection(true);
+        }
+
+        // Function to Disable/Enable Plant Selection Buttons
+        function disablePlantSelection(disable) {
+            const buttons = document.querySelectorAll('.guess-buttons button');
+            buttons.forEach(button => {
+                button.disabled = disable;
+                if (disable) {
+                    button.style.cursor = 'not-allowed';
+                    button.style.opacity = '0.6';
+                } else {
+                    button.style.cursor = 'pointer';
+                    button.style.opacity = '1';
+                }
+            });
         }
 
         // Reset Game Function
@@ -928,6 +888,9 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             clearInterval(gameTimer);
             gameDuration = 120; // Reset game duration
+
+            // Re-enable plant selection buttons
+            disablePlantSelection(false);
 
             // Switch back to Play Game tab
             switchTab('play');
@@ -990,6 +953,26 @@
                     break;
                 default:
                     break;
+            }
+        }
+
+        // Initialize Game on Tab Switch if Images are Loaded
+        function switchTab(tab) {
+            const playGameTab = document.querySelector('.nav-menu-button:nth-child(1)');
+            const aboutGameTab = document.querySelector('.nav-menu-button:nth-child(2)');
+            const playGame = document.getElementById('playGame');
+            const aboutGame = document.getElementById('aboutGame');
+
+            if (tab === 'play') {
+                playGameTab.classList.add('active');
+                aboutGameTab.classList.remove('active');
+                playGame.style.display = 'flex';
+                aboutGame.style.display = 'none';
+            } else {
+                aboutGameTab.classList.add('active');
+                playGameTab.classList.remove('active');
+                playGame.style.display = 'none';
+                aboutGame.style.display = 'flex';
             }
         }
     </script>
